@@ -44,14 +44,25 @@ void initialize(){
 	loadPictures();
 }
 
+void drawImageC(Image *img, int x, int y,
+                const double &widthRate = 1, const double &heightRate = 1,
+                const double &angle = 0, const Point *center = NULL,
+                const FlipType &flip = FLIP_NONE, const Rect *clip = nullptr){ //now x and y is real center point
+    int w, h;
+    getImageSize(img, w, h);
+    int leftx = x - w / 2 * widthRate;
+    int topy = y - h / 2 * heightRate;
+    drawImage(img, leftx, topy, widthRate, heightRate, angle, center, flip, clip);
+}
+
 void drawPlayer(){
 	int w,h;
 	getImageSize(imagePlayer, w, h);
 	setImageAlpha(imagePlayer, 150);
 	wRate = 0.5;
 	hRate = 0.5;
-	drawImage(imagePlayer, posPlayer.x - w / 2, posPlayer.y - h / 2, wRate, hRate);
-    drawImage(imagePlayer, posPlayer.x - w / 2, posPlayer.y - h / 2);
+	//drawImageC(imagePlayer, posPlayer.x, posPlayer.y);
+    drawImageC(imagePlayer, posPlayer.x, posPlayer.y, wRate, hRate);
 }
 void drawBackground(){
 	Rect rect = {70, 50, 80, 90};
@@ -75,7 +86,7 @@ void drawHint(){
 	Image *text = textToImage(te);
 	int w,h;
 	getImageSize(text, w, h);
-	drawImage(text, SCREEN_WIDTH - h / 2 - w / 2, SCREEN_HEIGHT / 2 - h / 2, 1, 1, 90+180);
+	drawImageC(text, SCREEN_WIDTH - h / 2, SCREEN_HEIGHT / 2, 1, 1, 90+180);
 }
 void drawMouse(){
     std::string posMouse = "X = ";
@@ -84,21 +95,21 @@ void drawMouse(){
     Image *text = textToImage(posMouse);
     int w, h;
     getImageSize(text, w, h);
-    drawImage(text, SCREEN_WIDTH - w, h / 2);
+    drawImageC(text, SCREEN_WIDTH - w / 2, h / 2);
 }
-void drawCenter(){
+/*void drawCenter(){
     //Color curColor = canvasColor;
     setPenColor(255, 0, 255, 255);
     drawPoint(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
     //canvasColor = curColor;
-}
+}*/
 void drawBullet(const PointD &bul){
-    drawImage(imageBullet, bul.x, bul.y, wRate, hRate);
+    drawImageC(imageBullet, bul.x, bul.y, wRate, hRate);
 }
 void drawBullet(){
     for (auto itb : bullet){
-        drawImage(imageBullet, itb.x, itb.y, wRate, hRate);
-        drawImage(imageBullet, itb.x, itb.y);
+        drawImageC(imageBullet, itb.x, itb.y, wRate, hRate);
+        //drawImageC(imageBullet, itb.x, itb.y);
     }
 }
 /*int lastAnime = 0;
@@ -122,7 +133,7 @@ void draw()
 	drawEnemy();
 	drawForeground();
 	drawHint();
-	drawCenter();
+	//drawCenter();
 }
 
 //Deal with Events
@@ -179,7 +190,7 @@ void dealWithBullet(){
         if (duration - lastBulletTime >= speedAttack){
             getImageSize(imagePlayer, wp, hp);
             //PointD newBullet(posPlayer.x, posPlayer.y - hp / 2 - hb / 2);
-            bullet.emplace_back(posPlayer.x - wb / 2, posPlayer.y - hp / 2 - hb);
+            bullet.emplace_back(posPlayer.x, posPlayer.y - (hp / 2 - hb) * hRate);
             lastBulletTime = duration;
         }
     }
