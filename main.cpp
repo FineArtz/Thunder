@@ -7,23 +7,23 @@
 #include <iomanip>
 #include <stdexcept>
 
+#define DEBUG_MODE
+
 const std::string Game::TitleName = "Rednuht 0.1";
 const int Game::SCREEN_WIDTH	= 640;
-const int Game::SCREEN_HEIGHT	= 800;
+const int Game::SCREEN_HEIGHT	= 780;
 
 using namespace Game;
 
 std::map<int, bool> keyboard;
 
-PointD posPlayer, velocityPlayer;
-PointD posEnemy[10];
-std::deque<PointD> bullet;
-double speedPlayer, speedBullet;
-double speedAttack;
+std::vector<Enemy> enemy;
+std::deque<Bullet> bullet;
+Player player;
+
+//double wRate = 1.0, hRate = 1.0;
 
 Image *imagePlayer, *imageBullet, *imageEnemy, *images[100];
-
-double wRate = 1.0, hRate = 1.0;
 
 void loadPictures(){
 	imagePlayer = loadImage( "player.png" );
@@ -32,37 +32,71 @@ void loadPictures(){
 }
 
 void initialize(){
+    #ifdef DEBUG_MODE
 	FPS_DISPLAY = true;
+	#endif // DEBUG_MODE
 
-	posPlayer = PointD( SCREEN_WIDTH/2, SCREEN_HEIGHT/2 );
-	posEnemy[0] = posPlayer;
-	speedPlayer = 5;
-	speedBullet = 20;
-	speedAttack = 0.1;
+	player.pos = PointD(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+    player.vel = PointD(5, 5);
+    player.speedAttack = 0.1;
+    player.wRate = 0.5;
+    player.hRate = 0.5;
+
 	canvasColor = {0, 0, 0, 255};
 
 	loadPictures();
+
+	player.img = imagePlayer;
 }
 
+//draw image at its center point
 void drawImageC(Image *img, int x, int y,
                 const double &widthRate = 1, const double &heightRate = 1,
                 const double &angle = 0, const Point *center = NULL,
-                const FlipType &flip = FLIP_NONE, const Rect *clip = nullptr){ //now x and y is real center point
+                const FlipType &flip = FLIP_NONE, const Rect *clip = nullptr){
     int w, h;
     getImageSize(img, w, h);
     int leftx = x - w / 2 * widthRate;
     int topy = y - h / 2 * heightRate;
     drawImage(img, leftx, topy, widthRate, heightRate, angle, center, flip, clip);
 }
+inline void drawImageC(Image *img, PointD p,
+                const double &widthRate = 1, const double &heightRate = 1,
+                const double &angle = 0, const Point *center = NULL,
+                const FlipType &flip = FLIP_NONE, const Rect *clip = nullptr){
+    drawImageC(img, p.x, p.y, widthRate, heightRate, angle, center, flip, clip);
+}
+inline void drawImageC(const item &it,
+                const double &angle = 0, const Point *center = NULL,
+                const FlipType &flip = FLIP_NONE, const Rect *clip = nullptr){
+    drawImageC(it.img, it.pos.x, it.pos.y, it.wRate, it.hRate, angle, center, flip, clip);
+}
 
-void drawPlayer(){
-	int w,h;
-	getImageSize(imagePlayer, w, h);
-	setImageAlpha(imagePlayer, 150);
-	wRate = 0.5;
-	hRate = 0.5;
-	//drawImageC(imagePlayer, posPlayer.x, posPlayer.y);
-    drawImageC(imagePlayer, posPlayer.x, posPlayer.y, wRate, hRate);
+void drawDebugInfo(){
+    std::string dInfo = "duration = ";
+    dInfo += toString(trunc(duration));
+	Image *text = textToImage(dInfo);
+    int w, h;
+    getImageSize(text, w, h);
+    drawImageC(text, PointD(SCREEN_WIDTH - w * 0.5 * 0.8, h *0.5 * 0.8), 0.8, 0.8); //right top
+    cleanup(text);
+    //use PointD as argument to avoid ambiguous call
+
+	dInfo = "MouseX = ";
+    dInfo += toString(mouseX);
+    dInfo += ", MouseY = " + toString(mouseY);
+    text = textToImage(dInfo);
+    getImageSize(text, w, h);
+    drawImageC(text, PointD(SCREEN_WIDTH - w * 0.5 * 0.8, h * 1.5 * 0.8), 0.8, 0.8); //right top
+    cleanup(text);
+
+    dInfo = "PlayerX = ";
+    dInfo += toString(trunc(player.pos.x));
+    dInfo += ", PlayerY = " + toString(trunc(player.pos.y));
+    text = textToImage(dInfo);
+    getImageSize(text, w, h);
+    drawImageC(text, PointD(SCREEN_WIDTH - w * 0.5 * 0.8, h * 2.5 * 0.8), 0.8, 0.8); //right top
+    cleanup(text);
 }
 void drawBackground(){
 	Rect rect = {70, 50, 80, 90};
@@ -71,101 +105,67 @@ void drawBackground(){
 	//	Pay attention: (Color){255,255,0} means (Color){255,255,0,0}
 	//	and means you will draw nothing
 
-	drawRect( rect, true );
-
+	drawRect(rect, true);
 }
 void drawForeground(){
-	Rect rect = {200, 176, 85, 100};
-	setPenColor((Color){0, 0, 255, 200});
-
-	drawRect( rect );
+    #ifdef DEBUG_MODE
+    drawDebugInfo();
+    #endif // DEBUG_MODE
 }
-void drawHint(){
-    std::string te = "duration = ";
-    te += toString(trunc(duration));
-	Image *text = textToImage(te);
-	int w,h;
-	getImageSize(text, w, h);
-	drawImageC(text, SCREEN_WIDTH - h / 2, SCREEN_HEIGHT / 2, 1, 1, 90+180);
+void drawPlayer(){
+	setImageAlpha(imagePlayer, 150);
+    drawImageC(player);
 }
-void drawMouse(){
-    std::string posMouse = "X = ";
-    posMouse += toString(mouseX);
-    posMouse += ", Y = " + toString(mouseY);
-    Image *text = textToImage(posMouse);
-    int w, h;
-    getImageSize(text, w, h);
-    drawImageC(text, SCREEN_WIDTH - w / 2, h / 2);
+inline void drawEnemy(){
+    for (auto ene : enemy) drawImageC(ene);
 }
-/*void drawCenter(){
-    //Color curColor = canvasColor;
-    setPenColor(255, 0, 255, 255);
-    drawPoint(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
-    //canvasColor = curColor;
-}*/
-void drawBullet(const PointD &bul){
-    drawImageC(imageBullet, bul.x, bul.y, wRate, hRate);
-}
-void drawBullet(){
-    for (auto itb : bullet){
-        drawImageC(imageBullet, itb.x, itb.y, wRate, hRate);
-        //drawImageC(imageBullet, itb.x, itb.y);
+inline void drawBullet(){
+    for (Bullet bul : bullet){
+        if (bul.isPlayer) drawImageC(bul);
+        else drawImageC(bul.img, bul.pos, bul.wRate, bul.hRate, 0, 0, FLIP_VERTICAL);
     }
 }
-/*int lastAnime = 0;
-void drawEnemy()
-{
-	int w,h;
-	getImageSize( imageEnemy, w, h );
-	lastAnime = (lastAnime+15)%(4*60);
-	Rect clip = {w/16*(lastAnime/60), 0, w/16,h/16};
-	setImageAlpha( imageEnemy, 255 );
-	drawImage( imageEnemy, posEnemy[0].x, posEnemy[0].y, 2, 2, 0, NULL, FLIP_NONE, &clip );
-}*/
-void drawEnemy(){}
 
 void draw()
 {
 	drawBackground();
-	drawMouse();
 	drawPlayer();
-	drawBullet();
 	drawEnemy();
+	drawBullet();
 	drawForeground();
-	drawHint();
-	//drawCenter();
 }
 
 //Deal with Events
 void dealWithPlayer(){
 	bool move = false;
 	if(keyboard[KEY_UP]	|| keyboard['w']){ //move forward
-		velocityPlayer = velocityPlayer + PointD(0,-1) * speedPlayer;
+		player.vel = player.vel + PointD(0,-1) * player.speed;
 		move = true;
 	}
 	if(keyboard[KEY_DOWN] || keyboard['s']){ //move backward
-		velocityPlayer = velocityPlayer + PointD(0,+1) * speedPlayer;
+		player.vel = player.vel + PointD(0,+1) * player.speed;
 		move = true;
 	}
 	if(keyboard[KEY_LEFT] || keyboard['a']){ //move leftward
-		velocityPlayer = velocityPlayer + PointD(-1,0) * speedPlayer;
+		player.vel = player.vel + PointD(-1,0) * player.speed;
 		move = true;
 	}
 	if(keyboard[KEY_RIGHT] || keyboard['d']){ //move rightward
-		velocityPlayer = velocityPlayer + PointD(+1,0) * speedPlayer;
+		player.vel = player.vel + PointD(+1,0) * player.speed;
 		move = true;
 	}
 
-	double len = velocityPlayer.length();
-	if(len > speedPlayer){ //move to fast!
-		velocityPlayer = velocityPlayer / len * speedPlayer;
+	double len = player.vel.length();
+	if(len > player.speed){ //move to fast!
+		player.vel = player.vel / len * player.speed;
 	}
-	posPlayer = posPlayer + velocityPlayer;
+	player.pos = player.pos + player.vel;
+	maintainToScreen(player);
 
 	if(!move){ //not move, velocity gradually lows
-		velocityPlayer = velocityPlayer * 0.8; //speed of lowness
-		if(velocityPlayer.length() < 0.1)
-			velocityPlayer = PointD(); //stop
+		player.vel = player.vel * 0.8; //speed of lowness
+		if(player.vel.length() < 0.1)
+			player.vel = PointD(); //stop
 	}
 }
 void dealWithEnemy(){
@@ -178,8 +178,8 @@ void dealWithBullet(){
     getImageSize(imageBullet, wb, hb);
     auto itb = bullet.begin();
     while (itb != bullet.end()){
-        itb->y -= speedBullet;
-        if (itb->y - hb / 2 <= 0)
+        itb->pos = itb->pos - itb->vel;
+        if (outOfScreen(*itb))
             bullet.erase(itb); //out of screen
         if (itb == bullet.end()) break;
         else ++itb;
@@ -187,10 +187,12 @@ void dealWithBullet(){
     //if (keyboard['z']) std::cout << "Z" << std::endl;
 
     if (keyboard[KEY_ENTER] || keyboard['z']){ //create a new bullet
-        if (duration - lastBulletTime >= speedAttack){
+        if (duration - lastBulletTime >= player.speedAttack){
             getImageSize(imagePlayer, wp, hp);
             //PointD newBullet(posPlayer.x, posPlayer.y - hp / 2 - hb / 2);
-            bullet.emplace_back(posPlayer.x, posPlayer.y - (hp / 2 - hb) * hRate);
+            bullet.emplace_back(imageBullet, player.pos.x, player.pos.y - (hp / 2 - hb) * player.hRate);
+            bullet[bullet.size() - 1].wRate = player.wRate;
+            bullet[bullet.size() - 1].hRate = player.hRate;
             lastBulletTime = duration;
         }
     }
