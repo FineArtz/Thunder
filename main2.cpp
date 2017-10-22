@@ -72,6 +72,7 @@ void drawHint()
 	int w,h;
 	getImageSize( text, w, h );
 	drawImage( text, SCREEN_WIDTH-h/2-w/2, SCREEN_HEIGHT/2-h/2, 1, 1, 90+180 );
+	cleanup(text);
 }
 void drawBullet()
 {
