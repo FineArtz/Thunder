@@ -5,6 +5,7 @@
 #include <vector>
 #include <deque>
 #include <iomanip>
+#include <cstdlib>
 #include <stdexcept>
 
 #define DEBUG_MODE
@@ -28,7 +29,7 @@ Image *imagePlayer, *imageBullet, *imageEnemy, *images[100];
 void loadPictures(){
 	imagePlayer = loadImage( "player.png" );
 	imageBullet = loadImage( "bullet.png" );
-	imageEnemy	= loadImage( "enemy.png"  );
+	imageEnemy	= loadImage( "player_u.png"  );
 }
 
 void initialize(){
@@ -117,7 +118,7 @@ void drawPlayer(){
     drawImageC(player);
 }
 inline void drawEnemy(){
-    for (auto ene : enemy) drawImageC(ene);
+    for (auto ene : enemy) drawImageC(ene, 0, 0, FLIP_VERTICAL);
 }
 inline void drawBullet(){
     for (Bullet bul : bullet){
@@ -136,6 +137,7 @@ void draw()
 }
 
 //Deal with Events
+double lastBulletTime = 0.0;
 void dealWithPlayer(){
 	bool move = false;
 	if(keyboard[KEY_UP]	|| keyboard['w']){ //move forward
@@ -167,26 +169,10 @@ void dealWithPlayer(){
 		if(player.vel.length() < 0.1)
 			player.vel = PointD(); //stop
 	}
-}
-void dealWithEnemy(){
 
-}//ToDO
-
-double lastBulletTime = 0.0;
-void dealWithBullet(){
-    int wp, hp, wb, hb; //p=player, b=bullet
-    getImageSize(imageBullet, wb, hb);
-    auto itb = bullet.begin();
-    while (itb != bullet.end()){
-        itb->pos = itb->pos - itb->vel;
-        if (outOfScreen(*itb))
-            bullet.erase(itb); //out of screen
-        if (itb == bullet.end()) break;
-        else ++itb;
-    }
-    //if (keyboard['z']) std::cout << "Z" << std::endl;
-
-    if (keyboard[KEY_ENTER] || keyboard['z']){ //create a new bullet
+	int wb, wp, hb, hp;
+	getImageSize(imageBullet, wb, hb);
+	if (keyboard[KEY_ENTER] || keyboard['z']){ //create a new bullet
         if (duration - lastBulletTime >= player.speedAttack){
             getImageSize(imagePlayer, wp, hp);
             //PointD newBullet(posPlayer.x, posPlayer.y - hp / 2 - hb / 2);
@@ -196,6 +182,53 @@ void dealWithBullet(){
             lastBulletTime = duration;
         }
     }
+}
+
+//double lastEnemyTime[10] = {0.0}; //the index represent the eType
+double lastEnemyTime = 0.0;
+const double gapEnemy = 3.0; //gap of two enemies' arrival
+void dealWithEnemy(){
+    auto ite = enemy.begin();
+    int wb, hb;
+    getImageSize(imageBullet, wb, hb);
+    while (ite != enemy.end()){
+        ite->pos = ite->pos + ite->vel;
+        if (outOfScreen(*ite))
+            enemy.erase(ite);
+        if (ite == enemy.end()) break;
+        if (duration - ite->bulTime >= ite->speedAttack){//Create a new bullet
+            bullet.emplace_back(imageBullet,
+                                ite->pos.x, ite->pos.y + (ite->imgh / 2 - hb) * ite->hRate,
+                                0, 20, false);
+            bullet[bullet.size() - 1].wRate = ite->wRate;
+            bullet[bullet.size() - 1].hRate = ite->hRate;
+            ite->bulTime = duration;
+        }
+        ++ite;
+    }
+    if (duration - lastEnemyTime >= gapEnemy){
+        int we, he;
+        getImageSize(imageEnemy, we, he);
+        int r = rand() % (SCREEN_WIDTH - we);
+        enemy.emplace_back(imageEnemy, r, he / 2 * 0.5, 0);
+        enemy[enemy.size() - 1].wRate = 0.5;
+        enemy[enemy.size() - 1].hRate = 0.5;
+        if (outOfScreen(enemy[enemy.size() - 1]))
+            maintainToScreen(enemy[enemy.size() - 1]);
+        lastEnemyTime = duration;
+    }
+}
+
+void dealWithBullet(){
+    auto itb = bullet.begin();
+    while (itb != bullet.end()){
+        itb->pos = itb->pos + itb->vel;
+        if (outOfScreen(*itb))
+            bullet.erase(itb); //out of screen
+        if (itb == bullet.end()) break;
+        else ++itb;
+    }
+    //if (keyboard['z']) std::cout << "Z" << std::endl;
 }
 
 //Reactions to Mouse
