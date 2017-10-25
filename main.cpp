@@ -1,4 +1,6 @@
 #include "SDL2_header.h"
+#include "item.h"
+#include "others.h"
 
 #include <cstdio>
 #include <map>
@@ -238,11 +240,11 @@ void mouseMove(){}
 void mouseRelease(){}
 
 //Reactions to Keyboard
-inline void keyDown(){
+void keyDown(){
 	keyboard[keyValue] = true;
 }
 
-inline void keyUp(){
+void keyUp(){
 	keyboard[keyValue] = false;
 }
 

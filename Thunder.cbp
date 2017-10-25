@@ -31,18 +31,19 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-std=c++11" />
-			<Add directory="../Demo&amp;Souces/SDL2plus-windows/include" />
+			<Add directory="include" />
 		</Compiler>
 		<Linker>
 			<Add option="-lmingw32 -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image" />
-			<Add directory="../Demo&amp;Souces/SDL2plus-windows/lib" />
+			<Add directory="lib" />
 		</Linker>
+		<Unit filename="SDL2_header.cpp" />
 		<Unit filename="SDL2_header.h" />
 		<Unit filename="cleanup.h" />
-		<Unit filename="draw.h" />
+		<Unit filename="item.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="others.h" />
-		<Unit filename="pointd.hpp" />
+		<Unit filename="pointd.h" />
 		<Unit filename="res_path.h" />
 		<Extensions>
 			<code_completion />
