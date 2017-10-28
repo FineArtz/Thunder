@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1508768342 source:c:\users\administrator\desktop\development-thunder\thunder\main.cpp
+1509157149 source:c:\users\administrator\desktop\development-thunder\thunder\main.cpp
 	"SDL2_header.h"
 	"item.h"
 	"others.h"
@@ -10,6 +10,7 @@
 	<iomanip>
 	<cstdlib>
 	<stdexcept>
+	<cmath>
 
 1508698640 c:\users\administrator\desktop\development-thunder\thunder\sdl2_header.h
 	<SDL2/SDL.h>
@@ -36,7 +37,8 @@
 1508698640 c:\users\administrator\desktop\development-thunder\thunder\pointd.h
 	<cmath>
 
-1508764793 c:\users\administrator\desktop\development-thunder\thunder\item.h
+1509156853 c:\users\administrator\desktop\development-thunder\thunder\item.h
+	<cmath>
 
 1508767271 source:c:\users\administrator\desktop\development-thunder\thunder\sdl2_header.cpp
 	"res_path.h"

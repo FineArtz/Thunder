@@ -9,8 +9,11 @@
 #include <iomanip>
 #include <cstdlib>
 #include <stdexcept>
+#include <cmath>
 
 #define DEBUG_MODE
+
+const double PI = 3.1415926;
 
 const std::string Game::TitleName = "Rednuht 0.1";
 const int Game::SCREEN_WIDTH	= 640;
@@ -21,7 +24,7 @@ using namespace Game;
 std::map<int, bool> keyboard;
 
 std::vector<Enemy> enemy;
-std::deque<Bullet> bullet;
+std::vector<Bullet> bullet;
 Player player;
 
 //double wRate = 1.0, hRate = 1.0;
@@ -50,6 +53,8 @@ void initialize(){
 	loadPictures();
 
 	player.img = imagePlayer;
+	getImageSize(player.img, player.imgh, player.imgw);
+	player.colR = hypot(player.imgw * player.wRate / 3, player.imgh * player.hRate / 3);
 }
 
 //draw image at its center point
@@ -69,10 +74,9 @@ inline void drawImageC(Image *img, PointD p,
                 const FlipType &flip = FLIP_NONE, const Rect *clip = nullptr){
     drawImageC(img, p.x, p.y, widthRate, heightRate, angle, center, flip, clip);
 }
-inline void drawImageC(const item &it,
-                const double &angle = 0, const Point *center = NULL,
+inline void drawImageC(const item &it, const Point *center = NULL,
                 const FlipType &flip = FLIP_NONE, const Rect *clip = nullptr){
-    drawImageC(it.img, it.pos.x, it.pos.y, it.wRate, it.hRate, angle, center, flip, clip);
+    drawImageC(it.img, it.pos.x, it.pos.y, it.wRate, it.hRate, it.imgAngle, center, flip, clip);
 }
 
 void drawDebugInfo(){
@@ -102,13 +106,7 @@ void drawDebugInfo(){
     cleanup(text);
 }
 void drawBackground(){
-	Rect rect = {70, 50, 80, 90};
-	setPenColor((Color){255, 255, 0, 255});
-
-	//	Pay attention: (Color){255,255,0} means (Color){255,255,0,0}
-	//	and means you will draw nothing
-
-	drawRect(rect, true);
+    //ToDo
 }
 void drawForeground(){
     #ifdef DEBUG_MODE
@@ -120,12 +118,12 @@ void drawPlayer(){
     drawImageC(player);
 }
 inline void drawEnemy(){
-    for (auto ene : enemy) drawImageC(ene, 0, 0, FLIP_VERTICAL);
+    for (auto ene : enemy) drawImageC(ene, NULL, FLIP_VERTICAL);
 }
 inline void drawBullet(){
     for (Bullet bul : bullet){
         if (bul.isPlayer) drawImageC(bul);
-        else drawImageC(bul.img, bul.pos, bul.wRate, bul.hRate, 0, 0, FLIP_VERTICAL);
+        else drawImageC(bul.img, bul.pos, bul.wRate, bul.hRate, bul.imgAngle, NULL, FLIP_VERTICAL);
     }
 }
 
@@ -178,9 +176,10 @@ void dealWithPlayer(){
         if (duration - lastBulletTime >= player.speedAttack){
             getImageSize(imagePlayer, wp, hp);
             //PointD newBullet(posPlayer.x, posPlayer.y - hp / 2 - hb / 2);
-            bullet.emplace_back(imageBullet, player.pos.x, player.pos.y - (hp / 2 - hb) * player.hRate);
-            bullet[bullet.size() - 1].wRate = player.wRate;
-            bullet[bullet.size() - 1].hRate = player.hRate;
+            bullet.emplace_back(imageBullet, player.pos.x, player.pos.y - (hp / 2 - hb) * player.hRate,
+                                0, -20, player.wRate, player.hRate, 0, true);
+           // bullet[bullet.size() - 1].wRate = player.wRate;
+            //bullet[bullet.size() - 1].hRate = player.hRate;
             lastBulletTime = duration;
         }
     }
@@ -188,22 +187,31 @@ void dealWithPlayer(){
 
 //double lastEnemyTime[10] = {0.0}; //the index represent the eType
 double lastEnemyTime = 0.0;
-const double gapEnemy = 3.0; //gap of two enemies' arrival
+const double gapEnemy = 2.0; //gap of two enemies' arrival
 void dealWithEnemy(){
     auto ite = enemy.begin();
     int wb, hb;
     getImageSize(imageBullet, wb, hb);
     while (ite != enemy.end()){
+        if (ite->HP <= 0){
+             enemy.erase(ite);
+             continue;
+        }
         ite->pos = ite->pos + ite->vel;
         if (outOfScreen(*ite))
             enemy.erase(ite);
         if (ite == enemy.end()) break;
         if (duration - ite->bulTime >= ite->speedAttack){//Create a new bullet
-            bullet.emplace_back(imageBullet,
-                                ite->pos.x, ite->pos.y + (ite->imgh / 2 - hb) * ite->hRate,
-                                0, 20, false);
-            bullet[bullet.size() - 1].wRate = ite->wRate;
-            bullet[bullet.size() - 1].hRate = ite->hRate;
+            double wRate = ite->wRate;
+            double hRate = ite->hRate;
+            double bx = ite->pos.x, by = ite->pos.y + (ite->imgh / 2 - hb) * ite->hRate;
+            double ang = atan((player.pos.x - bx) / (player.pos.y - by));
+            double vx = 5 * sin(ang), vy = 5 * cos(ang);
+            ang *= ang / PI * 180;
+            if (ang >= 0) ang = 360 - ang;
+            else ang = 180 - ang;
+            bullet.emplace_back(imageBullet, bx, by, vx, vy, wRate, hRate, ang, false);
+
             ite->bulTime = duration;
         }
         ++ite;
@@ -213,8 +221,10 @@ void dealWithEnemy(){
         getImageSize(imageEnemy, we, he);
         int r = rand() % (SCREEN_WIDTH - we);
         enemy.emplace_back(imageEnemy, r, he / 2 * 0.5, 0);
-        enemy[enemy.size() - 1].wRate = 0.5;
-        enemy[enemy.size() - 1].hRate = 0.5;
+        Enemy &ene = enemy[enemy.size() - 1];
+        ene.wRate = 0.5;
+        ene.hRate = 0.5;
+        ene.colR = hypot(ene.imgw / 2 * ene.wRate, ene.imgh / 2 * ene.hRate);
         if (outOfScreen(enemy[enemy.size() - 1]))
             maintainToScreen(enemy[enemy.size() - 1]);
         lastEnemyTime = duration;
@@ -233,6 +243,42 @@ void dealWithBullet(){
     //if (keyboard['z']) std::cout << "Z" << std::endl;
 }
 
+void dealWithCollision(){
+    //bullets with planes
+    auto itb = bullet.begin();
+    while (itb != bullet.end()){
+        //std::cout << itb->isPlayer << std::endl;
+        //system("PAUSE");
+        if (itb->isPlayer){
+            auto ite = enemy.begin();
+            while (ite != enemy.end()){
+                if (isCollide(*itb, *ite)){
+                    --ite->HP;
+                    bullet.erase(itb);
+                    break;
+                }
+                ++ite;
+            }
+            if (itb != bullet.end()) ++itb;
+        }
+        else{
+            if (isCollide(*itb, player)){
+                --player.HP;
+                player.isCol = true;
+                bullet.erase(itb);
+                continue;
+            }
+            else ++itb;
+        }
+    }
+}
+
+void dealWithEvent(){
+    dealWithPlayer();
+    dealWithEnemy();
+    dealWithBullet();
+    dealWithCollision();
+}
 //Reactions to Mouse
 //ToDo
 void mousePress(){}
@@ -250,10 +296,7 @@ void keyUp(){
 
 //Main
 int work(bool &quit){
-	dealWithPlayer();
-	dealWithBullet();
-	dealWithEnemy();
-
+    dealWithEvent();
 	draw();
 
 	if(keyboard[KEY_ESC])
