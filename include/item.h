@@ -1,8 +1,4 @@
-#ifndef ITEM_H
-#define ITEM_H
 
-#include <cmath>
-//#include "SDL2_header.h"
 /* Class Hierarchy
  * Base Class: item -> Bullet
  *                  -> Plane
@@ -45,9 +41,14 @@
  *              :: speedAttack          //speed of emitting bullets
  *              :: bulTime              //last emitting time
  */
-namespace Game{
-extern void drawImageC();
+#ifndef ITEM_H
+#define ITEM_H
 
+#include <cmath>
+#include "SDL2_header.h"
+//extern void drawImageC();
+
+namespace Game{
 class item{
 public:
     //constructor
@@ -62,7 +63,7 @@ public:
                 imgw = 0;
                 imgh = 0;
             }
-    };
+    }
     virtual ~item(){ img = nullptr; }
 
     Image *img;
@@ -134,46 +135,10 @@ public:
     double speedAttack = 100.0;
     double bulTime = 0.0;
 };
-void Enemy::setAbility(){//ToDo
-    switch(eType){
-        case 0:
-            vel.x = 0;
-            vel.y = 3;
-            HP = 1;
-            speedAttack = 2.0;
-            bulTime = 0.0;
-            break;
-        default:
-            break;
-    }
-}
 
-inline bool outOfScreen(const item &it){
-    int w, h;
-    getImageSize(it.img, w, h);
-    w = w / 2 * it.wRate;
-    h = h / 2 * it.hRate;
-    if (it.pos.x - w <= 0 || it.pos.y - h <= 0
-     || it.pos.x + w >= SCREEN_WIDTH || it.pos.y + h >= SCREEN_HEIGHT)
-        return true;
-    return false;
-}
-void maintainToScreen(item &it){
-    int w, h;
-    getImageSize(it.img, w, h);
-    w = w / 2 * it.wRate;
-    h = h / 2 * it.hRate;
-    if (it.pos.x < w) it.pos.x = w;
-    if (it.pos.x > SCREEN_WIDTH - w) it.pos.x = SCREEN_WIDTH - w;
-    if (it.pos.y < h) it.pos.y = h;
-    if (it.pos.y > SCREEN_HEIGHT - h) it.pos.y = SCREEN_HEIGHT - h;
-}
-inline bool isCollide(const item &i1, const item &i2){
-    double d = hypot(i1.pos.x - i2.pos.x, i1.pos.y - i2.pos.y);
-    d /= i1.wRate;
-    if (d - i1.colR - i2.colR <= 10e-6) return true;
-    return false;
-}
+bool outOfScreen(const item &it);
+void maintainToScreen(item &it);
+bool isCollide(const item &i1, const item &i2);
 }
 
 #endif // ITEM_H

@@ -38,13 +38,18 @@
 			<Add directory="lib" />
 		</Linker>
 		<Unit filename="SDL2_header.cpp" />
-		<Unit filename="SDL2_header.h" />
-		<Unit filename="cleanup.h" />
-		<Unit filename="item.h" />
+		<Unit filename="deal.cpp" />
+		<Unit filename="draw.cpp" />
+		<Unit filename="include/SDL2_header.h" />
+		<Unit filename="include/cleanup.h" />
+		<Unit filename="include/deal.h" />
+		<Unit filename="include/draw.h" />
+		<Unit filename="include/item.h" />
+		<Unit filename="include/others.h" />
+		<Unit filename="include/pointd.h" />
+		<Unit filename="include/res_path.h" />
+		<Unit filename="item.cpp" />
 		<Unit filename="main.cpp" />
-		<Unit filename="others.h" />
-		<Unit filename="pointd.h" />
-		<Unit filename="res_path.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />

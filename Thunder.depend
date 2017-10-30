@@ -1,8 +1,10 @@
 # depslib dependency file v1.0
-1509157149 source:c:\users\administrator\desktop\development-thunder\thunder\main.cpp
+1509376574 source:c:\users\administrator\desktop\development-thunder\thunder\main.cpp
 	"SDL2_header.h"
 	"item.h"
 	"others.h"
+	"draw.h"
+	"deal.h"
 	<cstdio>
 	<map>
 	<vector>
@@ -37,15 +39,16 @@
 1508698640 c:\users\administrator\desktop\development-thunder\thunder\pointd.h
 	<cmath>
 
-1509156853 c:\users\administrator\desktop\development-thunder\thunder\item.h
+1509173218 c:\users\administrator\desktop\development-thunder\thunder\item.h
 	<cmath>
+	"SDL2_header.h"
 
 1508767271 source:c:\users\administrator\desktop\development-thunder\thunder\sdl2_header.cpp
 	"res_path.h"
 	"pointd.h"
 	"SDL2_header.h"
 
-1508698640 c:\users\administrator\desktop\development-thunder\thunder\include\sdl2_header.h
+1509183987 c:\users\administrator\desktop\development-thunder\thunder\include\sdl2_header.h
 	<SDL2/SDL.h>
 	<SDL2/SDL_ttf.h>
 	<SDL2/SDL_image.h>
@@ -416,4 +419,41 @@
 1508630411 c:\users\administrator\desktop\development-thunder\thunder\others.h
 	<string>
 	<sstream>
+
+1509184048 source:c:\users\administrator\desktop\development-thunder\thunder\item.cpp
+	"item.h"
+
+1509175335 c:\users\administrator\desktop\development-thunder\thunder\draw.h
+	"SDL2_header.h"
+	"item.h"
+
+1509373646 source:c:\users\administrator\desktop\development-thunder\thunder\deal.cpp
+	"SDL2_header.h"
+	"item.h"
+	"deal.h"
+	"draw.h"
+	<map>
+
+1509376585 source:c:\users\administrator\desktop\development-thunder\thunder\draw.cpp
+	"draw.h"
+	"others.h"
+	<vector>
+	<stdexcept>
+	<iostream>
+
+1509175885 c:\users\administrator\desktop\development-thunder\thunder\deal.h
+
+1509194339 c:\users\administrator\desktop\development-thunder\thunder\include\draw.h
+	"SDL2_header.h"
+	"item.h"
+
+1509371268 c:\users\administrator\desktop\development-thunder\thunder\include\item.h
+	<cmath>
+	"SDL2_header.h"
+
+1508630411 c:\users\administrator\desktop\development-thunder\thunder\include\others.h
+	<string>
+	<sstream>
+
+1509373655 c:\users\administrator\desktop\development-thunder\thunder\include\deal.h
 

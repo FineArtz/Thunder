@@ -8,6 +8,8 @@
 #ifndef SDL2_HEADER_H
 #define SDL2_HEADER_H
 
+#define DEBUG_MODE
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
@@ -80,6 +82,8 @@ extern const std::string RES_PATH_FONT;
 //Screen attributes
 extern const int SCREEN_WIDTH;
 extern const int SCREEN_HEIGHT;
+extern const int PLAY_WIDTH;
+extern const int PLAY_HEIGHT;
 extern const std::string TitleName;
 
 extern std::string	fontName;

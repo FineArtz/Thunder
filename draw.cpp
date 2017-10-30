@@ -1,8 +1,18 @@
-#include "SDL2_header.h"
-#include "item.h"
+#include "draw.h"
 #include "others.h"
+
+#include <vector>
+#include <stdexcept>
+#include <iostream>
+
 using namespace Game;
 
+extern Player player;
+extern std::vector<Enemy> enemy;
+extern std::vector<Bullet> bullet;
+
+
+//draw image at its center point
 void drawImageC(Image *img, int x, int y,
                 const double &widthRate = 1, const double &heightRate = 1,
                 const double &angle = 0, const Point *center = NULL,
@@ -13,16 +23,15 @@ void drawImageC(Image *img, int x, int y,
     int topy = y - h / 2 * heightRate;
     drawImage(img, leftx, topy, widthRate, heightRate, angle, center, flip, clip);
 }
-inline void drawImageC(Image *img, PointD p,
+void drawImageC(Image *img, PointD p,
                 const double &widthRate = 1, const double &heightRate = 1,
                 const double &angle = 0, const Point *center = NULL,
                 const FlipType &flip = FLIP_NONE, const Rect *clip = nullptr){
     drawImageC(img, p.x, p.y, widthRate, heightRate, angle, center, flip, clip);
 }
-inline void drawImageC(const item &it,
-                const double &angle = 0, const Point *center = NULL,
+void drawImageC(const item &it, const Point *center = NULL,
                 const FlipType &flip = FLIP_NONE, const Rect *clip = nullptr){
-    drawImageC(it.img, it.pos.x, it.pos.y, it.wRate, it.hRate, angle, center, flip, clip);
+    drawImageC(it.img, it.pos.x, it.pos.y, it.wRate, it.hRate, it.imgAngle, center, flip, clip);
 }
 
 void drawDebugInfo(){
@@ -31,7 +40,7 @@ void drawDebugInfo(){
 	Image *text = textToImage(dInfo);
     int w, h;
     getImageSize(text, w, h);
-    drawImageC(text, PointD(SCREEN_WIDTH - w * 0.5 * 0.8, h *0.5 * 0.8), 0.8, 0.8); //right top
+    drawImageC(text, PointD(PLAY_WIDTH + w * 0.5 * 0.8 + 5, h *0.5 * 0.8), 0.8, 0.8); //right top
     cleanup(text);
     //use PointD as argument to avoid ambiguous call
 
@@ -40,7 +49,7 @@ void drawDebugInfo(){
     dInfo += ", MouseY = " + toString(mouseY);
     text = textToImage(dInfo);
     getImageSize(text, w, h);
-    drawImageC(text, PointD(SCREEN_WIDTH - w * 0.5 * 0.8, h * 1.5 * 0.8), 0.8, 0.8); //right top
+    drawImageC(text, PointD(PLAY_WIDTH + w * 0.5 * 0.8 + 5, h * 1.5 * 0.8), 0.8, 0.8); //right top
     cleanup(text);
 
     dInfo = "PlayerX = ";
@@ -48,33 +57,49 @@ void drawDebugInfo(){
     dInfo += ", PlayerY = " + toString(trunc(player.pos.y));
     text = textToImage(dInfo);
     getImageSize(text, w, h);
-    drawImageC(text, PointD(SCREEN_WIDTH - w * 0.5 * 0.8, h * 2.5 * 0.8), 0.8, 0.8); //right top
+    drawImageC(text, PointD(PLAY_WIDTH + w * 0.5 * 0.8 + 5, h * 2.5 * 0.8), 0.8, 0.8); //right top
     cleanup(text);
 }
+
 void drawBackground(){
-	Rect rect = {70, 50, 80, 90};
-	setPenColor((Color){255, 255, 0, 255});
-
-	//	Pay attention: (Color){255,255,0} means (Color){255,255,0,0}
-	//	and means you will draw nothing
-
-	drawRect(rect, true);
+    //ToDo
 }
 void drawForeground(){
     #ifdef DEBUG_MODE
     drawDebugInfo();
     #endif // DEBUG_MODE
+    Rect sepLine = {PLAY_WIDTH, 1, 3, PLAY_HEIGHT};
+    setPenColor(255, 255, 255, 255);
+    drawRect(sepLine, true);
 }
 void drawPlayer(){
-	setImageAlpha(imagePlayer, 150);
+	setImageAlpha(player.img, 150);
     drawImageC(player);
 }
-inline void drawEnemy(){
-    for (auto ene : enemy) drawImageC(ene, 0, 0, FLIP_VERTICAL);
+void drawEnemy(){
+    for (auto ene : enemy)
+        drawImageC(ene, NULL, FLIP_VERTICAL);
 }
-inline void drawBullet(){
+void drawBullet(){
     for (Bullet bul : bullet){
         if (bul.isPlayer) drawImageC(bul);
-        else drawImageC(bul.img, bul.pos, bul.wRate, bul.hRate, 0, 0, FLIP_VERTICAL);
+        else drawImageC(bul.img, bul.pos, bul.wRate, bul.hRate, bul.imgAngle, NULL, FLIP_VERTICAL);
     }
+}
+
+extern double endTime;
+bool drawEndAnime(){
+    Image *endAnime = loadImage("red_strip24.png");
+    int w, h;
+    getImageSize(endAnime, w, h);
+    w /= 24;
+    int nowFrame = (duration - endTime) * 20;
+    if (nowFrame < 24){
+        Rect partR = {w*nowFrame, 0, w, h};
+        drawImage(endAnime, player.pos.x, player.pos.y, player.wRate * 2, player.hRate * 2, 0, NULL, FLIP_NONE, &partR);
+        cleanup(endAnime);
+        return true;
+    }
+    cleanup(endAnime);
+    return false;
 }
