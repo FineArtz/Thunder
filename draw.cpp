@@ -1,6 +1,4 @@
 #include "draw.h"
-#include "others.h"
-
 
 using namespace Game;
 
@@ -12,12 +10,14 @@ extern Image *images[100];
 
 extern int soulAttack;
 extern int score, highestScore;
+extern double endTime;
+extern bool gameOver;
 
 //draw image at its center point
 void drawImageC(Image *img, int x, int y,
-                const double &widthRate = 1, const double &heightRate = 1,
-                const double &angle = 0, const Point *center = NULL,
-                const FlipType &flip = FLIP_NONE, const Rect *clip = nullptr){
+                const double &widthRate, const double &heightRate,
+                const double &angle, const Point *center,
+                const FlipType &flip, const Rect *clip){
     int w, h;
     getImageSize(img, w, h);
     int leftx = x - w / 2 * widthRate;
@@ -25,13 +25,13 @@ void drawImageC(Image *img, int x, int y,
     drawImage(img, leftx, topy, widthRate, heightRate, angle, center, flip, clip);
 }
 void drawImageC(Image *img, PointD p,
-                const double &widthRate = 1, const double &heightRate = 1,
-                const double &angle = 0, const Point *center = NULL,
-                const FlipType &flip = FLIP_NONE, const Rect *clip = nullptr){
+                const double &widthRate, const double &heightRate,
+                const double &angle, const Point *center,
+                const FlipType &flip, const Rect *clip){
     drawImageC(img, p.x, p.y, widthRate, heightRate, angle, center, flip, clip);
 }
-void drawImageC(const item &it, const Point *center = NULL,
-                const FlipType &flip = FLIP_NONE, const Rect *clip = nullptr){
+void drawImageC(const item &it, const Point *center,
+                const FlipType &flip, const Rect *clip){
     drawImageC(it.img, it.pos.x, it.pos.y, it.wRate, it.hRate, it.imgAngle, center, flip, clip);
 }
 
@@ -109,7 +109,10 @@ void drawGameInfo(){
 
     upperBound = upperBound + h * rate1 + 20;
     gInfo = "TIME ";
-    gInfo += toString((int)duration);
+    if (!gameOver)
+        gInfo += toString((int)duration);
+    else
+        gInfo += toString((int)endTime);
     Color PURPLE = {255, 5, 255, 255};
     text = textToImage(gInfo, fontSize, PURPLE);
     getImageSize(text, w, h);
@@ -137,7 +140,8 @@ void drawPlayer(){
 }
 void drawEnemy(){
     for (auto ene : enemy)
-        drawImageC(ene, NULL, FLIP_VERTICAL);
+        if (ene.eraseTime == 0)
+            drawImageC(ene, NULL, FLIP_VERTICAL);
 }
 void drawBullet(){
     for (Bullet bul : bullet){
@@ -146,16 +150,46 @@ void drawBullet(){
     }
 }
 
-bool drawBurstAnime(int x, double startTime){
+bool drawBurstAnime(int x, const item &i){
     int w, h;
     getImageSize(images[x], w, h);
     w /= 24;
-    int nowFrame = (duration - startTime) * 20;
+    int nowFrame = (duration - i.eraseTime) * 20;
     if (nowFrame < 24){
         Rect partR = {w * nowFrame, 0, w, h};
-        drawImage(images[x], player.pos.x - w * player.wRate * 2, player.pos.y - h * player.hRate * 2,
-                  player.wRate * 4, player.hRate * 4, 0, NULL, FLIP_NONE, &partR);
+        drawImage(images[x], i.pos.x - w * i.wRate * 2, i.pos.y - h * i.hRate * 2,
+                  i.wRate * 4, i.hRate * 4, 0, NULL, FLIP_NONE, &partR);
         return true;
     }
     return false;
+}
+
+void drawEndInfo(){
+    std::string eInfo = "Time: ";
+    eInfo += toString((int)player.eraseTime);
+    Image *text = textToImage(eInfo);
+    int w, h;
+    getImageSize(text, w, h);
+    drawImageC(text, PointD(PLAY_WIDTH / 2, PLAY_HEIGHT / 2 - 4 * h), 2.0, 2.0);
+    cleanup(text);
+
+    eInfo = "Score: ";
+    eInfo += toString(score);
+    if (score < highestScore){
+        text = textToImage(eInfo);
+    }
+    else{
+        Color RED = {255, 5, 5, 255};
+        text = textToImage(eInfo, fontSize, RED);
+    }
+    getImageSize(text, w, h);
+    drawImageC(text, PointD(PLAY_WIDTH / 2, PLAY_HEIGHT / 2), 2.0, 2.0);
+    cleanup(text);
+
+    eInfo = "Highest Score: ";
+    eInfo += toString(highestScore);
+    text = textToImage(eInfo);
+    getImageSize(text, w, h);
+    drawImageC(text, PointD(PLAY_WIDTH / 2, PLAY_HEIGHT / 2 + 4 * h), 2.0, 2.0);
+    cleanup(text);
 }

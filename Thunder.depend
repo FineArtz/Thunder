@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1509510923 source:c:\users\administrator\desktop\development-thunder\thunder\main.cpp
+1509531455 source:c:\users\administrator\desktop\development-thunder\thunder\main.cpp
 	"SDL2_header.h"
 	"item.h"
 	"others.h"
@@ -14,6 +14,7 @@
 	<stdexcept>
 	<cmath>
 	<fstream>
+	<string>
 
 1508698640 c:\users\administrator\desktop\development-thunder\thunder\sdl2_header.h
 	<SDL2/SDL.h>
@@ -428,21 +429,18 @@
 	"SDL2_header.h"
 	"item.h"
 
-1509509567 source:c:\users\administrator\desktop\development-thunder\thunder\deal.cpp
-	"SDL2_header.h"
-	"item.h"
+1509531243 source:c:\users\administrator\desktop\development-thunder\thunder\deal.cpp
 	"deal.h"
-	"draw.h"
 
-1509510923 source:c:\users\administrator\desktop\development-thunder\thunder\draw.cpp
+1509531593 source:c:\users\administrator\desktop\development-thunder\thunder\draw.cpp
 	"draw.h"
-	"others.h"
 
 1509175885 c:\users\administrator\desktop\development-thunder\thunder\deal.h
 
-1509510731 c:\users\administrator\desktop\development-thunder\thunder\include\draw.h
+1509531072 c:\users\administrator\desktop\development-thunder\thunder\include\draw.h
 	"SDL2_header.h"
 	"item.h"
+	"others.h"
 	<vector>
 	<stdexcept>
 	<string>
@@ -456,7 +454,13 @@
 	<string>
 	<sstream>
 
-1509511144 c:\users\administrator\desktop\development-thunder\thunder\include\deal.h
+1509529709 c:\users\administrator\desktop\development-thunder\thunder\include\deal.h
 	<map>
 	<iostream>
+	<fstream>
+	<string>
+	"draw.h"
+	"others.h"
+	"SDL2_header.h"
+	"item.h"
 

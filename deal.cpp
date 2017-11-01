@@ -1,8 +1,4 @@
-#include "SDL2_header.h"
-#include "item.h"
 #include "deal.h"
-#include "draw.h"
-
 
 using namespace Game;
 
@@ -12,7 +8,8 @@ extern std::vector<Enemy> enemy;
 extern std::vector<Bullet> bullet;
 extern bool gameOver;
 extern int soulAttack;
-extern int score;
+extern int score, highestScore;
+extern double endTime;
 
 extern Image *imagePlayer, *imageBullet, *imageEnemy, *images[100];
 
@@ -100,10 +97,19 @@ void dealWithEnemy(){
     while (ite != enemy.end()){
         //std::cout << "DEALWITHENEMY" << std::endl;
         if (ite->HP <= 0){
-
-            enemy.erase(ite);
-            //std::cout << "ERASE ENEMY" << std::endl;
-            score += 100;
+            if (ite->eraseTime == 0){
+                ite->eraseTime = duration;
+                score += 100;
+                ++ite;
+            }
+            else{
+                bool b = drawBurstAnime(3, *ite);
+                if (!b){
+                    enemy.erase(ite);
+                    //std::cout << "ERASE ENEMY" << std::endl;
+                }
+                else ++ite;
+            }
             continue;
         }
         ite->pos = ite->pos + ite->vel;
@@ -169,10 +175,12 @@ void dealWithCollision(){
         if (itb->isPlayer){
             auto ite = enemy.begin();
             while (ite != enemy.end()){
-                if (isCollide(*itb, *ite)){
-                    --ite->HP;
-                    bullet.erase(itb);
-                    break;
+                if (ite->eraseTime == 0){
+                    if (isCollide(*itb, *ite)){
+                        --ite->HP;
+                        bullet.erase(itb);
+                        break;
+                    }
                 }
                 ++ite;
             }
@@ -181,7 +189,7 @@ void dealWithCollision(){
         else{
             if (isCollide(*itb, player)){
                 --player.HP;
-                ++soulAttack;
+                if (soulAttack < 3) ++soulAttack;
                 player.isCol = true;
                 bullet.erase(itb);
                 continue;
@@ -196,7 +204,7 @@ void dealWithCollision(){
         if (isCollide(*ite, player)){
             ite->HP = 0;
             --player.HP;
-            ++soulAttack;
+            if (soulAttack < 3) ++soulAttack;
             player.isCol = true;
         }
         ++ite;
@@ -207,5 +215,18 @@ bool dealWithEnd(){
     enemy.clear();
     bullet.clear();
     gameOver = true;
-    return !drawBurstAnime(2, player.eraseTime);
+    if (!drawBurstAnime(2, player)){ //show score
+        static int ctrl = 0; //control delay time
+        if (player.eraseTime > 0){
+            drawEndInfo();
+            if (ctrl % 3 == 0) player.eraseTime -= 1; //do per 5 frames
+            if (ctrl % 3 == 0) ++score; //do per 5 frames
+            ++ctrl;
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
+    return false;
 }

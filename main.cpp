@@ -13,7 +13,7 @@
 #include <stdexcept>
 #include <cmath>
 #include <fstream>
-
+#include <string>
 
 const std::string Game::TitleName = "Rednuht 0.1";
 const int Game::SCREEN_WIDTH	= 1000;
@@ -34,6 +34,7 @@ bool gameOver = false;
 int soulAttack ;
 
 int score = 0, highestScore;
+double endTime;
 
 Image *imagePlayer, *imageBullet, *imageEnemy, *images[100];
 
@@ -45,6 +46,7 @@ void loadPictures(){
 	images[0] = loadImage("HP.png");
 	images[1] = loadImage("Bomb.png");
 	images[2] = loadImage("red_strip24.png");
+	images[3] = loadImage("poison_strip24.png");
 }
 void setPlayer(){
     player.pos = PointD(PLAY_WIDTH / 2, PLAY_HEIGHT / 2);
@@ -83,7 +85,7 @@ void draw()
 void dealWithEvent(){
     int alive = dealWithPlayer();
     if (alive == -1){
-        player.eraseTime = duration;
+        player.eraseTime = endTime = duration;
         gameOver = true;
         return;
     }
@@ -113,10 +115,14 @@ int work(bool &quit){
     }
     draw();
     if (gameOver){
-        bool endEndAnime = dealWithEnd();
-        if (endEndAnime){
-            quit = true;
-            return 0;
+        bool isEnd = dealWithEnd();
+        if (isEnd){
+            if (score + (int)player.eraseTime > highestScore){
+                std::ofstream ofs("res\\highestscore");
+                ofs << score + (int)player.eraseTime << std::endl;
+                ofs.close();
+            }
+            drawEndInfo();
         }
     }
 
