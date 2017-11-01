@@ -72,6 +72,7 @@ public:
     int imgw, imgh;
     double colR = 0.0;
     double imgAngle = 0.0;
+    double eraseTime = 0.0;
 };
 
 class Bullet : public item{
@@ -102,7 +103,7 @@ public:
     ~Plane(){ img = nullptr; }
 
     PointD vel;
-    double HP;
+    int HP;
     bool isPlayer;
 };
 

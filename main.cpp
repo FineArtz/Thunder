@@ -12,6 +12,7 @@
 #include <cstdlib>
 #include <stdexcept>
 #include <cmath>
+#include <fstream>
 
 
 const std::string Game::TitleName = "Rednuht 0.1";
@@ -29,17 +30,21 @@ std::vector<Bullet> bullet;
 Player player;
 
 bool gameOver = false;
-double endTime = 0.0;
 
-int soulAttack = 5;
-//double wRate = 1.0, hRate = 1.0;
+int soulAttack ;
+
+int score = 0, highestScore;
 
 Image *imagePlayer, *imageBullet, *imageEnemy, *images[100];
 
 void loadPictures(){
-	imagePlayer = loadImage( "player.png" );
-	imageBullet = loadImage( "bullet.png" );
-	imageEnemy	= loadImage( "player_u.png"  );
+	imagePlayer = loadImage("player.png");
+	imageBullet = loadImage("bullet.png");
+	imageEnemy	= loadImage("player_u.png");
+
+	images[0] = loadImage("HP.png");
+	images[1] = loadImage("Bomb.png");
+	images[2] = loadImage("red_strip24.png");
 }
 void setPlayer(){
     player.pos = PointD(PLAY_WIDTH / 2, PLAY_HEIGHT / 2);
@@ -59,12 +64,17 @@ void initialize(){
 	canvasColor = {0, 0, 0, 255};
 	loadPictures();
     setPlayer();
+    soulAttack = 3;
+
+    std::ifstream ifs("res\\highestscore");
+    ifs >> highestScore;
+    ifs.close();
 }
 
 void draw()
 {
 	drawBackground();
-	drawPlayer();
+	if (!gameOver) drawPlayer();
 	drawEnemy();
 	drawBullet();
 	drawForeground();
@@ -73,7 +83,7 @@ void draw()
 void dealWithEvent(){
     int alive = dealWithPlayer();
     if (alive == -1){
-        endTime = duration;
+        player.eraseTime = duration;
         gameOver = true;
         return;
     }
@@ -100,8 +110,8 @@ void keyUp(){
 int work(bool &quit){
     if (!gameOver){
         dealWithEvent();
-        if (!gameOver) draw();
     }
+    draw();
     if (gameOver){
         bool endEndAnime = dealWithEnd();
         if (endEndAnime){

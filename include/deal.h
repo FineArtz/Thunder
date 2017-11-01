@@ -1,6 +1,9 @@
 #ifndef DEAL_H
 #define DEAL_H
 
+#include <map>
+#include <iostream>
+
 //double lastBulletTime = 0.0;
 int dealWithPlayer();
 

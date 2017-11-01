@@ -2,7 +2,7 @@
 #include "item.h"
 #include "deal.h"
 #include "draw.h"
-#include <map>
+
 
 using namespace Game;
 
@@ -12,13 +12,16 @@ extern std::vector<Enemy> enemy;
 extern std::vector<Bullet> bullet;
 extern bool gameOver;
 extern int soulAttack;
+extern int score;
 
 extern Image *imagePlayer, *imageBullet, *imageEnemy, *images[100];
 
 const double PI = 3.1415926;
 
-//Deal with Events
 double lastBulletTime = 0.0;
+double lastSoulAttackTime = 0.0;
+
+//Deal with Events
 int dealWithPlayer(){
     //Game Over
     if (player.HP <= 0){
@@ -73,11 +76,14 @@ int dealWithPlayer(){
     }
 
     if ((keyboard[KEY_SPACE] || keyboard['x']) && soulAttack > 0){ //soul attack
-        bullet.clear();
-        for (auto ene : enemy){
-            ene.HP -= 50;
+        if (duration - lastSoulAttackTime >= 1.0){
+            bullet.clear();
+            for (auto &ene : enemy){
+                ene.HP -= 50;
+            }
+            --soulAttack;
+            lastSoulAttackTime = duration;
         }
-        --soulAttack;
     }
     //is collided
     //ToDo
@@ -92,9 +98,13 @@ void dealWithEnemy(){
     int wb, hb;
     getImageSize(imageBullet, wb, hb);
     while (ite != enemy.end()){
+        //std::cout << "DEALWITHENEMY" << std::endl;
         if (ite->HP <= 0){
-             enemy.erase(ite);
-             continue;
+
+            enemy.erase(ite);
+            //std::cout << "ERASE ENEMY" << std::endl;
+            score += 100;
+            continue;
         }
         ite->pos = ite->pos + ite->vel;
         if (outOfScreen(*ite))
@@ -171,6 +181,7 @@ void dealWithCollision(){
         else{
             if (isCollide(*itb, player)){
                 --player.HP;
+                ++soulAttack;
                 player.isCol = true;
                 bullet.erase(itb);
                 continue;
@@ -185,6 +196,7 @@ void dealWithCollision(){
         if (isCollide(*ite, player)){
             ite->HP = 0;
             --player.HP;
+            ++soulAttack;
             player.isCol = true;
         }
         ++ite;
@@ -195,5 +207,5 @@ bool dealWithEnd(){
     enemy.clear();
     bullet.clear();
     gameOver = true;
-    return !drawEndAnime();
+    return !drawBurstAnime(2, player.eraseTime);
 }

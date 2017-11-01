@@ -82,8 +82,8 @@ extern const std::string RES_PATH_FONT;
 //Screen attributes
 extern const int SCREEN_WIDTH;
 extern const int SCREEN_HEIGHT;
-extern const int PLAY_WIDTH;
-extern const int PLAY_HEIGHT;
+extern const int PLAY_WIDTH; //New Added!
+extern const int PLAY_HEIGHT; //New Added!
 extern const std::string TitleName;
 
 extern std::string	fontName;

@@ -5,6 +5,10 @@
 #include "SDL2_header.h"
 #include "item.h"
 
+#include <vector>
+#include <stdexcept>
+#include <string>
+#include <iostream>
 
 void drawImageC(Image *img, int x, int y,
                 const double &widthRate, const double &heightRate,
@@ -19,11 +23,12 @@ void drawImageC(const Game::item &it, const Point *center,
                 const FlipType &flip, const Rect *clip);
 
 void drawDebugInfo();
+void drawGameInfo();
 void drawBackground();
 void drawForeground();
 void drawPlayer();
 void drawEnemy();
 void drawBullet();
-bool drawEndAnime();
+bool drawBurstAnime(int, double);
 
 #endif // DRAW_H
