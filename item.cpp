@@ -7,8 +7,15 @@ void Enemy::setAbility(){//ToDo
             vel.x = 0;
             vel.y = 3;
             HP = 1;
-            speedAttack = 2.0;
+            speedAttack = std::max(2.0 - duration * 0.05, 0.5);
             bulTime = 0.0;
+            break;
+        case 1:
+            vel.x = 0;
+            vel.y = 1.5;
+            HP = 3;
+            speedAttack = 32767;
+            bulTime = -32768;
             break;
         default:
             break;

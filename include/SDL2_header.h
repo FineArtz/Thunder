@@ -8,8 +8,6 @@
 #ifndef SDL2_HEADER_H
 #define SDL2_HEADER_H
 
-#define DEBUG_MODE
-
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
@@ -23,6 +21,8 @@
 #include "cleanup.h"
 #include "res_path.h"
 #include "pointd.h"
+
+#define DEBUG_MODE
 
 namespace Game {
 

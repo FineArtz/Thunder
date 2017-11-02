@@ -49,7 +49,6 @@ void loadPictures(){
 	images[3] = loadImage("poison_strip24.png");
 }
 void setPlayer(){
-    player.pos = PointD(PLAY_WIDTH / 2, PLAY_HEIGHT / 2);
     player.vel = PointD(5, 5);
     player.speedAttack = 0.3;
     player.wRate = 0.5;
@@ -57,6 +56,7 @@ void setPlayer(){
     player.img = imagePlayer;
 	getImageSize(player.img, player.imgh, player.imgw);
 	player.colR = hypot(player.imgw * player.wRate / 3, player.imgh * player.hRate / 3);
+	player.pos = PointD(PLAY_WIDTH / 2, PLAY_HEIGHT - player.imgh / 2 * player.hRate);
 }
 void initialize(){
     #ifdef DEBUG_MODE
