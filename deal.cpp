@@ -131,20 +131,12 @@ void dealWithEnemy(){
                 //each case is added an extra pair of brackets to avoid jumping labels and crossing initializations
                 case 0:{ //emit one bullet to the player
                     double bx = ite->pos.x, by = ite->pos.y + (ite->imgh / 2 - hb) * ite->hRate; //position in x and y
-                    double ang = atan((double)(player.pos.x - bx) / (double)(player.pos.y - by)); //emitting angle in radian measure
-                    double vx = abs(5 * sin(ang)), vy = abs(5 * cos(ang)); //velocity in x and y
-                    if (bx > player.pos.x) vx = -vx;
-                    if (by > player.pos.y) vy = -vy;
-                    ang = abs(ang / PI * 180); //transform into angular measure
-                    //further transformation of rotating angle of image
-                    if (bx >= player.pos.x && by >= player.pos.y)
-                        ang = 180 - ang;
-                    else if (bx >= player.pos.x && by < player.pos.y)
-                        ang = ang;
-                    else if (bx < player.pos.x && by >= player.pos.y)
-                        ang = 180 + ang;
-                    else if (bx < player.pos.x && by < player.pos.y)
-                        ang = 360 - ang;
+                    double ang = std::atan2(player.pos.y - by, player.pos.x - bx); //emitting angle in radian measure
+                    double vx = 5 * std::cos(ang), vy = 5 * std::sin(ang); //velocity in x and y
+
+                    ang = ang / PI * 180; //transform into angular measure
+                    ang -= 90; //rotating angle
+                    if (ang < 0) ang += 360;
                     bullet.emplace_back(imageBullet, bx, by, vx, vy, wRate, hRate, ang, false);
                     ite->bulTime = duration; //update the last emitting time
                     break;
@@ -165,10 +157,10 @@ void dealWithEnemy(){
                 case 2:{ //gradually change its direction to player
                     Enemy &ene2 = *ite;
                     double ang = atan(ene2.vel.y / ene2.vel.x), angDir = atan((player.pos.y - ene2.pos.y) / (player.pos.x - ene2.pos.x));
-                    //If ene2.vel.y / ene2.vel.x is too large, it will overflow. So the special dealing is necessary.
+                    //If ene2.vel.y / ene2.vel.x is too large, it will overflow. So the special judgment is necessary.
                     if (abs(ene2.vel.x) < 1e-3) ang = abs(ene2.vel.y) / ene2.vel.y * PI / 2;
                     if (abs(player.pos.x - ene2.pos.x) < 1e-3) angDir = abs(player.pos.y - ene2.pos.y) / (player.pos.y - ene2.pos.y) * PI / 2;
-                    //maintain the angle to [0, PI / 2)
+                    //maintain the angle to [0, 2 * PI)
                     if (ene2.vel.x >= 0 && ene2.vel.y < 0)
                         ang = PI * 2 + ang;
                     else if (ene2.vel.x < 0)
@@ -213,16 +205,15 @@ void dealWithEnemy(){
                             }
                         }
                     }
-                    //if (ang < 0) ang += 2 * PI;
-                    //if (ang > 2 * PI) ang -= 2 * PI;
-                    double vx = abs(15 * cos(ang)), vy = abs(15 * sin(ang));
+
+                    double vx = abs(15 * cos(ang)), vy = abs(15 * sin(ang)); //velocity in x and y
                     if (PI / 2 < ang && ang < PI / 2 * 3) vx = -vx;
                     if (PI < ang && ang < 2 * PI) vy = -vy;
                     ang = abs(ang / PI * 180); //transform into angular measure
                     ang -= 90.0;
-                    if (ang < 0) ang += 360;
+                    if (ang < 0) ang += 360; //rotating angle
                     ene2.vel.x = vx;
-                    ene2.vel.y = vy;
+                    ene2.vel.y = vy; //position in x and y
                     ene2.imgAngle = ang;
                     ite->bulTime = duration;
                     //std::cout << "CHANGE ETYPE2" << std::endl;

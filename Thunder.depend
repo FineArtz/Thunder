@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1509954733 source:c:\users\administrator\desktop\development-thunder\thunder\main.cpp
+1509964716 source:c:\users\administrator\desktop\development-thunder\thunder\main.cpp
 	"SDL2_header.h"
 	"item.h"
 	"others.h"
@@ -431,7 +431,7 @@
 	"SDL2_header.h"
 	"item.h"
 
-1509956729 source:c:\users\administrator\desktop\development-thunder\thunder\deal.cpp
+1509964509 source:c:\users\administrator\desktop\development-thunder\thunder\deal.cpp
 	"deal.h"
 
 1509531593 source:c:\users\administrator\desktop\development-thunder\thunder\draw.cpp

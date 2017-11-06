@@ -52,7 +52,7 @@ void loadPictures(){
 }
 void setPlayer(){
     player.vel = PointD(5, 5);
-    player.speedAttack = 0.3;
+    player.speedAttack = 0.2;
     player.wRate = 0.5;
     player.hRate = 0.5;
     player.img = imagePlayer;
