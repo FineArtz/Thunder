@@ -94,7 +94,7 @@ int dealWithPlayer(){
 
 //double lastEnemyTime[10] = {0.0}; //the index represent the eType
 double lastEnemyTime[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
-const double gapEnemy[5] = {1.5, 3.5, 2147483647, 2147483614, 2147483647}; //gap of two enemies' arrival
+const double gapEnemy[5] = {1.5, 3.3, 2.1, 2147483614, 2147483647}; //gap of two enemies' arrival
 
 void dealWithEnemy(){
     auto ite = enemy.begin();
@@ -131,12 +131,12 @@ void dealWithEnemy(){
                 //each case is added an extra pair of brackets to avoid jumping labels and crossing initializations
                 case 0:{ //emit one bullet to the player
                     double bx = ite->pos.x, by = ite->pos.y + (ite->imgh / 2 - hb) * ite->hRate; //position in x and y
-                    double ang = atan((player.pos.x - bx) / (player.pos.y - by)); //emitting angle in radian measure
+                    double ang = atan((double)(player.pos.x - bx) / (double)(player.pos.y - by)); //emitting angle in radian measure
                     double vx = abs(5 * sin(ang)), vy = abs(5 * cos(ang)); //velocity in x and y
                     if (bx > player.pos.x) vx = -vx;
                     if (by > player.pos.y) vy = -vy;
                     ang = abs(ang / PI * 180); //transform into angular measure
-                    //further transformation
+                    //further transformation of rotating angle of image
                     if (bx >= player.pos.x && by >= player.pos.y)
                         ang = 180 - ang;
                     else if (bx >= player.pos.x && by < player.pos.y)
@@ -150,16 +150,82 @@ void dealWithEnemy(){
                     break;
                 }
                 case 1:{ //emit bullets as a semicircle
-                    //int AMOUNT = 18; //the number of bullets, may change with hardness(ToDo)
+                    int AMOUNT = 20; //the number of bullets, may change with hardness(ToDo)
                     double radio = ite->colR; //initial radio of the semicircle
-                    for (int k = 0; k <= 18; ++k){
-                        double ang = (double)k / 18.0 * PI; //emitting angle in radian measure
+                    for (int k = 0; k <= AMOUNT; ++k){
+                        double ang = (double)k / AMOUNT * PI; //emitting angle in radian measure
                         double bx = ite->pos.x - radio * std::cos(ang), by = ite->pos.y + radio * std::sin(ang); //position in x and y
                         double vx = -3 * std::cos(ang), vy = 3 * std::sin(ang); //velocity in x and y
-                        ang = (k <= 9) ? (90 - k * 10) : (450 - k * 10); //emitting angle in angular measure
+                        ang = (k <= AMOUNT / 2) ? (90 - k * 180 / AMOUNT) : (450 - k * 180 / AMOUNT); //emitting angle in angular measure
                         bullet.emplace_back(imageBullet, bx, by, vx, vy, wRate, hRate, ang, false);
                     }
                     ite->bulTime = duration; //update the last emitting time
+                    break;
+                }
+                case 2:{ //gradually change its direction to player
+                    Enemy &ene2 = *ite;
+                    double ang = atan(ene2.vel.y / ene2.vel.x), angDir = atan((player.pos.y - ene2.pos.y) / (player.pos.x - ene2.pos.x));
+                    //If ene2.vel.y / ene2.vel.x is too large, it will overflow. So the special dealing is necessary.
+                    if (abs(ene2.vel.x) < 1e-3) ang = abs(ene2.vel.y) / ene2.vel.y * PI / 2;
+                    if (abs(player.pos.x - ene2.pos.x) < 1e-3) angDir = abs(player.pos.y - ene2.pos.y) / (player.pos.y - ene2.pos.y) * PI / 2;
+                    //maintain the angle to [0, PI / 2)
+                    if (ene2.vel.x >= 0 && ene2.vel.y < 0)
+                        ang = PI * 2 + ang;
+                    else if (ene2.vel.x < 0)
+                        ang = PI + ang;
+                    if (player.pos.x - ene2.pos.x >= 0 && player.pos.y - ene2.pos.y < 0){
+                        angDir = PI * 2 + angDir;
+                        //std::cout << angDir / PI * 180 << std::endl;
+                    }
+                    else if (player.pos.x - ene2.pos.x < 0){
+                        angDir = PI + angDir;
+                        //std::cout << angDir / PI * 180 << std::endl;
+                    }
+                    //rotate, always choose the direction that the differing angle is less than PI
+                    //very annoying judgment, maybe some of situations can be merged
+                    if (angDir > ang){
+                        if (angDir - ang <= PI){
+                            ang += PI / 20;
+                            if (ang > angDir) ang = angDir;
+                        }
+                        else{
+                            //std::cout << "PREANG = " << ang / PI * 180 << std::endl;
+                            ang -= PI / 20;
+                            if (ang < 0){
+                                ang += 2 * PI;
+                                if (ang < angDir) ang = angDir;
+                            }
+                            //std::cout << "ANGDIR = " << angDir / PI * 180 << std::endl;
+                            //std::cout << "NOWANG = " << ang / PI * 180 << std::endl;
+                            std::cout << std::endl;
+                        }
+                    }
+                    else{
+                        if (ang - angDir <= PI){
+                            ang -= PI / 20;
+                            if (ang < angDir) ang = angDir;
+                        }
+                        else{
+                            ang += PI / 20;
+                            if (ang > 2 * PI){
+                                ang -= 2 * PI;
+                                if (ang > angDir) ang = angDir;
+                            }
+                        }
+                    }
+                    //if (ang < 0) ang += 2 * PI;
+                    //if (ang > 2 * PI) ang -= 2 * PI;
+                    double vx = abs(15 * cos(ang)), vy = abs(15 * sin(ang));
+                    if (PI / 2 < ang && ang < PI / 2 * 3) vx = -vx;
+                    if (PI < ang && ang < 2 * PI) vy = -vy;
+                    ang = abs(ang / PI * 180); //transform into angular measure
+                    ang -= 90.0;
+                    if (ang < 0) ang += 360;
+                    ene2.vel.x = vx;
+                    ene2.vel.y = vy;
+                    ene2.imgAngle = ang;
+                    ite->bulTime = duration;
+                    //std::cout << "CHANGE ETYPE2" << std::endl;
                     break;
                 }
                 default:
@@ -187,8 +253,8 @@ void dealWithEnemy(){
                     break;
                 }
                 case 1:{
-                    if (duration < 40) break;
-                    enemy.emplace_back(imageEnemy, r, he / 2 * 0.5, 1);
+                    if (duration < 20) break;
+                    enemy.emplace_back(imageEnemy, r, he / 2, 1);
                     Enemy &ene1 = enemy[enemy.size() - 1];
                     ene1.wRate = 1.0;
                     ene1.hRate = 1.0;
@@ -196,6 +262,18 @@ void dealWithEnemy(){
                     if (outOfScreen(ene1))
                         maintainToScreen(ene1);
                     lastEnemyTime[1] = duration;
+                    break;
+                }
+                case 2:{
+                    if (duration < 10) break;
+                    enemy.emplace_back(imageEnemy, r, he / 2 * 0.3, 2);
+                    Enemy &ene2 = enemy[enemy.size() - 1];
+                    ene2.wRate = 0.3;
+                    ene2.hRate = 0.3;
+                    ene2.colR = hypot(ene2.imgw * ene2.wRate, ene2.imgh * ene2.hRate);
+                    if (outOfScreen(ene2))
+                        maintainToScreen(ene2);
+                    lastEnemyTime[2] = duration;
                     break;
                 }
                 default:

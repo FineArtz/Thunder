@@ -412,7 +412,7 @@ int main(int argc, char* args[]) {
 			SDL_Delay(oneStepTime*1000 - delta);
 			deltaTime = oneStepTime;
 		}
-		duration = duration + deltaTime;
+		duration = duration + delta / 1000;
 		duration_i++;
 
 

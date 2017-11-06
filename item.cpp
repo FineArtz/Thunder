@@ -1,13 +1,13 @@
 #include "item.h"
 
 namespace Game{
-void Enemy::setAbility(){//ToDo
+void Enemy::setAbility(){
     switch(eType){
         case 0:
             vel.x = 0;
             vel.y = 3;
             HP = 1;
-            speedAttack = std::max(2.0 - duration * 0.05, 0.5);
+            speedAttack = std::max(2.0 - duration * 0.05, 0.4);
             bulTime = 0.0;
             break;
         case 1:
@@ -16,6 +16,14 @@ void Enemy::setAbility(){//ToDo
             HP = 3;
             speedAttack = 32767;
             bulTime = -32768;
+            break;
+        case 2:
+            vel.x = 0.01;
+            vel.y = 9.99;
+            HP = 1;
+            speedAttack = 0.1;
+            bulTime = 0.0;
+            //std::cout << "CREATE ENEMY 2" << std::endl;
             break;
         default:
             break;
@@ -27,8 +35,8 @@ bool outOfScreen(const item &it){
     getImageSize(it.img, w, h);
     w = w / 2 * it.wRate;
     h = h / 2 * it.hRate;
-    if (it.pos.x - w <= 0 || it.pos.y - h <= 0
-     || it.pos.x + w >= PLAY_WIDTH || it.pos.y + h >= PLAY_HEIGHT)
+    if (it.pos.x  <= 0 || it.pos.y <= 0
+     || it.pos.x >= PLAY_WIDTH || it.pos.y >= PLAY_HEIGHT)
         return true;
     return false;
 }

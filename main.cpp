@@ -14,6 +14,8 @@
 #include <cmath>
 #include <fstream>
 #include <string>
+#include <ctime>
+#include <cstdlib>
 
 const std::string Game::TitleName = "Rednuht 0.1";
 const int Game::SCREEN_WIDTH	= 1000;
@@ -68,9 +70,11 @@ void initialize(){
     setPlayer();
     soulAttack = 3;
 
-    std::ifstream ifs("res\\highestscore");
+    std::ifstream ifs("bin\\Debug\\hsset.dll");
     ifs >> highestScore;
     ifs.close();
+
+    std::srand(std::time(0));
 }
 
 void draw()
@@ -118,7 +122,7 @@ int work(bool &quit){
         bool isEnd = dealWithEnd();
         if (isEnd){
             if (score + (int)player.eraseTime > highestScore){
-                std::ofstream ofs("res\\highestscore");
+                std::ofstream ofs("bin\\Debug\\hsset.dll");
                 ofs << score + (int)player.eraseTime << std::endl;
                 ofs.close();
             }

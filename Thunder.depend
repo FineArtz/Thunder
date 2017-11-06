@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1509615078 source:c:\users\administrator\desktop\development-thunder\thunder\main.cpp
+1509954733 source:c:\users\administrator\desktop\development-thunder\thunder\main.cpp
 	"SDL2_header.h"
 	"item.h"
 	"others.h"
@@ -15,6 +15,8 @@
 	<cmath>
 	<fstream>
 	<string>
+	<ctime>
+	<cstdlib>
 
 1508698640 c:\users\administrator\desktop\development-thunder\thunder\sdl2_header.h
 	<SDL2/SDL.h>
@@ -45,12 +47,12 @@
 	<cmath>
 	"SDL2_header.h"
 
-1508767271 source:c:\users\administrator\desktop\development-thunder\thunder\sdl2_header.cpp
+1509944954 source:c:\users\administrator\desktop\development-thunder\thunder\sdl2_header.cpp
 	"res_path.h"
 	"pointd.h"
 	"SDL2_header.h"
 
-1509615102 c:\users\administrator\desktop\development-thunder\thunder\include\sdl2_header.h
+1509870212 c:\users\administrator\desktop\development-thunder\thunder\include\sdl2_header.h
 	<SDL2/SDL.h>
 	<SDL2/SDL_ttf.h>
 	<SDL2/SDL_image.h>
@@ -422,14 +424,14 @@
 	<string>
 	<sstream>
 
-1509615339 source:c:\users\administrator\desktop\development-thunder\thunder\item.cpp
+1509954024 source:c:\users\administrator\desktop\development-thunder\thunder\item.cpp
 	"item.h"
 
 1509175335 c:\users\administrator\desktop\development-thunder\thunder\draw.h
 	"SDL2_header.h"
 	"item.h"
 
-1509614756 source:c:\users\administrator\desktop\development-thunder\thunder\deal.cpp
+1509956729 source:c:\users\administrator\desktop\development-thunder\thunder\deal.cpp
 	"deal.h"
 
 1509531593 source:c:\users\administrator\desktop\development-thunder\thunder\draw.cpp
