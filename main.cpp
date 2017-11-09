@@ -34,7 +34,6 @@ Player player;
 bool gameOver = false;
 
 int soulAttack ;
-
 int score = 0, highestScore;
 double endTime;
 

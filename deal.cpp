@@ -156,25 +156,12 @@ void dealWithEnemy(){
                 }
                 case 2:{ //gradually change its direction to player
                     Enemy &ene2 = *ite;
-                    double ang = atan(ene2.vel.y / ene2.vel.x), angDir = atan((player.pos.y - ene2.pos.y) / (player.pos.x - ene2.pos.x));
-                    //If ene2.vel.y / ene2.vel.x is too large, it will overflow. So the special judgment is necessary.
-                    if (abs(ene2.vel.x) < 1e-3) ang = abs(ene2.vel.y) / ene2.vel.y * PI / 2;
-                    if (abs(player.pos.x - ene2.pos.x) < 1e-3) angDir = abs(player.pos.y - ene2.pos.y) / (player.pos.y - ene2.pos.y) * PI / 2;
+                    double ang = std::atan2(ene2.vel.y, ene2.vel.x), angDir = std::atan2((player.pos.y - ene2.pos.y), (player.pos.x - ene2.pos.x));
                     //maintain the angle to [0, 2 * PI)
-                    if (ene2.vel.x >= 0 && ene2.vel.y < 0)
-                        ang = PI * 2 + ang;
-                    else if (ene2.vel.x < 0)
-                        ang = PI + ang;
-                    if (player.pos.x - ene2.pos.x >= 0 && player.pos.y - ene2.pos.y < 0){
-                        angDir = PI * 2 + angDir;
-                        //std::cout << angDir / PI * 180 << std::endl;
-                    }
-                    else if (player.pos.x - ene2.pos.x < 0){
-                        angDir = PI + angDir;
-                        //std::cout << angDir / PI * 180 << std::endl;
-                    }
+                    if (ang < 0) ang += 2 * PI;
+                    if (angDir < 0) angDir += 2 * PI;
                     //rotate, always choose the direction that the differing angle is less than PI
-                    //very annoying judgment, maybe some of situations can be merged
+                    //very annoying judgment, maybe some cases can be merged
                     if (angDir > ang){
                         if (angDir - ang <= PI){
                             ang += PI / 20;
@@ -259,6 +246,9 @@ void dealWithEnemy(){
                     if (duration < 10) break;
                     enemy.emplace_back(imageEnemy, r, he / 2 * 0.3, 2);
                     Enemy &ene2 = enemy[enemy.size() - 1];
+                    double ang = std::atan2(player.pos.y - ene2.pos.y, player.pos.x - ene2.pos.x);
+                    ene2.vel.x = 15 * std::cos(ang);
+                    ene2.vel.y = 15 * std::sin(ang); //initial velocity
                     ene2.wRate = 0.3;
                     ene2.hRate = 0.3;
                     ene2.colR = hypot(ene2.imgw * ene2.wRate, ene2.imgh * ene2.hRate);

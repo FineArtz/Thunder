@@ -7,19 +7,19 @@ void Enemy::setAbility(){
             vel.x = 0;
             vel.y = 3;
             HP = 1;
-            speedAttack = std::max(2.0 - duration * 0.05, 0.4);
+            speedAttack = std::max(2.0 - duration * 0.05, 0.4); //increase with time, but has a limit
             bulTime = 0.0;
             break;
         case 1:
             vel.x = 0;
             vel.y = 1.5;
             HP = 3;
-            speedAttack = 32767;
+            speedAttack = 32767; //only attack once
             bulTime = -32768;
             break;
         case 2:
-            vel.x = 0.01;
-            vel.y = 9.99;
+            vel.x = 0.0;
+            vel.y = 0.0; //the initial velocity depends on the relative position between player and this plane
             HP = 1;
             speedAttack = 0.1;
             bulTime = 0.0;
