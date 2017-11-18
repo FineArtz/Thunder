@@ -29,6 +29,7 @@ std::map<int, bool> keyboard;
 
 std::vector<Enemy> enemy;
 std::vector<Bullet> bullet;
+std::vector<Bonus> bonus;
 Player player;
 
 bool gameOver = false;
@@ -37,7 +38,7 @@ int soulAttack ;
 int score = 0, highestScore;
 double endTime;
 
-Image *imagePlayer, *imageBullet, *imageEnemy, *images[100];
+Image *imagePlayer, *imageBullet, *imageEnemy, *images[100], *imagesBonus[5];
 
 void loadPictures(){
 	imagePlayer = loadImage("player.png");
@@ -48,6 +49,12 @@ void loadPictures(){
 	images[1] = loadImage("Bomb.png");
 	images[2] = loadImage("red_strip24.png");
 	images[3] = loadImage("poison_strip24.png");
+
+	imagesBonus[0] = loadImage("bonus_500.png");
+	imagesBonus[1] = loadImage("bonus_1000.png");
+	imagesBonus[2] = loadImage("bonus_SA.png");
+	imagesBonus[3] = loadImage("bonus_Bomb.png");
+	imagesBonus[4] = loadImage("bonus_HP.png");
 }
 void setPlayer(){
     player.vel = PointD(5, 5);
@@ -80,6 +87,7 @@ void draw()
 {
 	drawBackground();
 	if (!gameOver) drawPlayer();
+	drawBonus();
 	drawEnemy();
 	drawBullet();
 	drawForeground();
@@ -94,6 +102,7 @@ void dealWithEvent(){
     }
     dealWithEnemy();
     dealWithBullet();
+    dealWithBonus();
     dealWithCollision();
 }
 
@@ -138,6 +147,8 @@ int work(bool &quit){
 void finale()
 {
 	cleanup(imagePlayer, imageBullet, imageEnemy);
-	for(int i = 0; i < 100; ++i)
+	for (int i = 0; i < 100; ++i)
 		cleanup(images[i]);
+    for (int i = 0; i < 5; ++i)
+        cleanup(imagesBonus[i]);
 }

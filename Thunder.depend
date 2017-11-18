@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1509964716 source:c:\users\administrator\desktop\development-thunder\thunder\main.cpp
+1510824330 source:c:\users\administrator\desktop\development-thunder\thunder\main.cpp
 	"SDL2_header.h"
 	"item.h"
 	"others.h"
@@ -52,7 +52,7 @@
 	"pointd.h"
 	"SDL2_header.h"
 
-1509870212 c:\users\administrator\desktop\development-thunder\thunder\include\sdl2_header.h
+1510823244 c:\users\administrator\desktop\development-thunder\thunder\include\sdl2_header.h
 	<SDL2/SDL.h>
 	<SDL2/SDL_ttf.h>
 	<SDL2/SDL_image.h>
@@ -424,22 +424,22 @@
 	<string>
 	<sstream>
 
-1510216744 source:c:\users\administrator\desktop\development-thunder\thunder\item.cpp
+1511023800 source:c:\users\administrator\desktop\development-thunder\thunder\item.cpp
 	"item.h"
 
 1509175335 c:\users\administrator\desktop\development-thunder\thunder\draw.h
 	"SDL2_header.h"
 	"item.h"
 
-1510216702 source:c:\users\administrator\desktop\development-thunder\thunder\deal.cpp
+1510830658 source:c:\users\administrator\desktop\development-thunder\thunder\deal.cpp
 	"deal.h"
 
-1509531593 source:c:\users\administrator\desktop\development-thunder\thunder\draw.cpp
+1510823187 source:c:\users\administrator\desktop\development-thunder\thunder\draw.cpp
 	"draw.h"
 
 1509175885 c:\users\administrator\desktop\development-thunder\thunder\deal.h
 
-1509531072 c:\users\administrator\desktop\development-thunder\thunder\include\draw.h
+1510823025 c:\users\administrator\desktop\development-thunder\thunder\include\draw.h
 	"SDL2_header.h"
 	"item.h"
 	"others.h"
@@ -448,7 +448,7 @@
 	<string>
 	<iostream>
 
-1509610944 c:\users\administrator\desktop\development-thunder\thunder\include\item.h
+1510823444 c:\users\administrator\desktop\development-thunder\thunder\include\item.h
 	<cmath>
 	"SDL2_header.h"
 
@@ -456,7 +456,7 @@
 	<string>
 	<sstream>
 
-1509614015 c:\users\administrator\desktop\development-thunder\thunder\include\deal.h
+1510823979 c:\users\administrator\desktop\development-thunder\thunder\include\deal.h
 	<map>
 	<iostream>
 	<fstream>

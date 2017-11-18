@@ -4,6 +4,7 @@
  *                  -> Plane
  *                  ->          -> Player
  *                  ->          -> Enemy
+ *                  -> Bonus
  *
  * Members
  * Class item   :: Image *img           //a pointer to store the corresponding image
@@ -40,6 +41,8 @@
  *              :: int eType            //type of enemy
  *              :: speedAttack          //speed of emitting bullets
  *              :: bulTime              //last emitting time
+ *
+ * Class Bonus  :: public inherited from Class item
  */
 #ifndef ITEM_H
 #define ITEM_H
@@ -99,7 +102,7 @@ public:
           const double &hp = 1, bool isP = true)
           : item(i, xx, yy), vel(vx, vy), HP(hp), isPlayer(isP) {}
     Plane(const double &hp, const double &xx, const double &yy, const double &vx, const double &vy)
-          : Plane(nullptr, hp, xx, yy, vx, vy, true) {};
+          : Plane(nullptr, hp, xx, yy, vx, vy, true) {}
     ~Plane(){ img = nullptr; }
 
     PointD vel;
@@ -113,7 +116,7 @@ public:
     Player(Image *i = nullptr,
            const double &xx = SCREEN_WIDTH / 2, const double &yy = SCREEN_HEIGHT / 2,
            const double &vx = 0, const double &vy = 0,
-           const double &hp = 5) : Plane(i, xx, yy, vx, vy, hp, true), attack(1), speed(5), speedAttack(1) {};
+           const double &hp = 5) : Plane(i, xx, yy, vx, vy, hp, true), attack(1), speed(5), speedAttack(1) {}
     ~Player(){ img = nullptr; }
 
     double attack = 1.0;
@@ -127,14 +130,30 @@ public:
     //constructor
     Enemy(Image *i = nullptr,
           const double &xx = SCREEN_WIDTH / 2, const double &yy = SCREEN_HEIGHT / 2,
-          const int &et = 0) : Plane(i, xx, yy, 0, 0, 1, false), eType(et) { setAbility(); };
-    ~Enemy(){ img = nullptr; };
+          const int &et = 0) : Plane(i, xx, yy, 0, 0, 1, false), eType(et) { setAbility(); }
+    ~Enemy(){ img = nullptr; }
 
     void setAbility();
 
     int eType = 0; //type of enemy
     double speedAttack = 100.0;
     double bulTime = 0.0;
+};
+
+class Bonus : public item{
+public:
+    //constructor
+    Bonus(Image *i = nullptr,
+          const double &xx = SCREEN_WIDTH / 2, const double &yy = SCREEN_HEIGHT / 2,
+          const int &bt = 0) : item(i, xx, yy), bType(bt) { setBonus(); }
+    ~Bonus(){ img = nullptr; }
+
+    void setBonus();
+
+    double speed = -5.0;
+    double deltaSpeed = 3.0;
+    int bType = 0;
+    double maxSpeed = 10.0;
 };
 
 bool outOfScreen(const item &it);

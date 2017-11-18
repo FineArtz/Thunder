@@ -30,6 +30,41 @@ void Enemy::setAbility(){
     }
 }
 
+void Bonus::setBonus(){
+    switch(bType){
+        case 0: //add 500 score
+            speed = -5.0 / 2.5;
+            deltaSpeed = 3.0 / 2.5;
+            maxSpeed = 10.0 / 2.5;
+            break;
+        case 1: //add 1000 score
+            speed = -5.0 / 2.5;
+            deltaSpeed = 4.5 / 2.5;
+            maxSpeed = 15.0 / 2.5;
+            break;
+        case 2: //increase speedAttack
+            speed = -5.0 / 2.5;
+            deltaSpeed = 5.0 / 2.5;
+            maxSpeed = 15.0 / 2.5;
+            break;
+        case 3: //add a bomb
+            speed = 0.0 / 2.5;
+            deltaSpeed = 5.0 / 2.5;
+            maxSpeed = 15.0 / 2.5;
+            break;
+        case 4: //add a health point
+            speed = 0.0 / 2.5;
+            deltaSpeed = 6.0 / 2.5;
+            maxSpeed = 18.0 / 2.5;
+            break;
+        default:
+            break;
+    }
+    wRate = 0.2;
+    hRate = 0.2;
+    colR = imgw * wRate * 4;
+}
+
 bool outOfScreen(const item &it){
     int w, h;
     getImageSize(it.img, w, h);

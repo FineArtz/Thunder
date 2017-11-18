@@ -5,6 +5,7 @@ using namespace Game;
 extern Player player;
 extern std::vector<Enemy> enemy;
 extern std::vector<Bullet> bullet;
+extern std::vector<Bonus> bonus;
 
 extern Image *images[100];
 
@@ -139,7 +140,7 @@ void drawPlayer(){
     drawImageC(player);
 }
 void drawEnemy(){
-    for (auto ene : enemy)
+    for (Enemy ene : enemy)
         if (ene.eraseTime == 0)
             drawImageC(ene, NULL, FLIP_VERTICAL);
 }
@@ -148,6 +149,10 @@ void drawBullet(){
         if (bul.isPlayer) drawImageC(bul);
         else drawImageC(bul.img, bul.pos, bul.wRate, bul.hRate, bul.imgAngle, NULL, FLIP_VERTICAL);
     }
+}
+void drawBonus(){
+    for (Bonus bon : bonus)
+        drawImageC(bon);
 }
 
 bool drawBurstAnime(int x, const item &i){

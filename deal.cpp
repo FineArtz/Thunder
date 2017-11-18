@@ -6,17 +6,19 @@ extern std::map<int, bool> keyboard;
 extern Player player;
 extern std::vector<Enemy> enemy;
 extern std::vector<Bullet> bullet;
+extern std::vector<Bonus> bonus;
 extern bool gameOver;
 extern int soulAttack;
 extern int score, highestScore;
 extern double endTime;
 
-extern Image *imagePlayer, *imageBullet, *imageEnemy, *images[100];
+extern Image *imagePlayer, *imageBullet, *imageEnemy, *images[100], *imagesBonus[5];
 
 const double PI = std::acos(-1);
 
 double lastBulletTime = 0.0;
 double lastSoulAttackTime = 0.0;
+double ISA_Time = 0.0;
 
 //Deal with Events
 int dealWithPlayer(){
@@ -55,6 +57,12 @@ int dealWithPlayer(){
 		player.vel = player.vel * 0.8; //speed of lowness
 		if(player.vel.length() < 0.1)
 			player.vel = PointD(); //stop
+	}
+
+	//no bonus!
+	if (ISA_Time > 10.0 && duration - ISA_Time >= 10.0){
+        ISA_Time = 0.0;
+        player.speedAttack *= 2;
 	}
 
 	//shoot
@@ -104,6 +112,21 @@ void dealWithEnemy(){
         //std::cout << "DEALWITHENEMY" << std::endl;
         if (ite->HP <= 0){ //be destroyed
             if (ite->eraseTime == 0){
+
+                if (ite->eType == 1){ //create bonus
+                    int prob = rand() % 100;//probability
+                    //4%: bonus HP
+                    if (prob == 3) bonus.emplace_back(imagesBonus[4], ite->pos.x, ite->pos.y, 4);
+                    //6%: bonus Bomb
+                    else if (prob <= 9) bonus.emplace_back(imagesBonus[3], ite->pos.x, ite->pos.y, 3);
+                    //10%: bonus speedAttack
+                    else if (prob <= 19) bonus.emplace_back(imagesBonus[2], ite->pos.x, ite->pos.y, 2);
+                    //20%: bonus 1000 points
+                    else if (prob <= 39) bonus.emplace_back(imagesBonus[1], ite->pos.x, ite->pos.y, 1);
+                    //40%: bonus 500 points
+                    else if (prob <= 79) bonus.emplace_back(imagesBonus[0], ite->pos.x, ite->pos.y, 0);
+                }
+
                 ite->eraseTime = duration;
                 score += 100;
                 ++ite;
@@ -130,19 +153,22 @@ void dealWithEnemy(){
             switch(ite->eType){
                 //each case is added an extra pair of brackets to avoid jumping labels and crossing initializations
                 case 0:{ //emit one bullet to the player
-                    double bx = ite->pos.x, by = ite->pos.y + (ite->imgh / 2 - hb) * ite->hRate; //position in x and y
-                    double ang = std::atan2(player.pos.y - by, player.pos.x - bx); //emitting angle in radian measure
-                    double vx = 5 * std::cos(ang), vy = 5 * std::sin(ang); //velocity in x and y
+                    if (ite->pos.y < PLAY_HEIGHT * 0.8){ //A condition to decrease hardness
+                        double bx = ite->pos.x, by = ite->pos.y + (ite->imgh / 2 - hb) * ite->hRate; //position in x and y
+                        double ang = std::atan2(player.pos.y - by, player.pos.x - bx); //emitting angle in radian measure
+                        double vx = 5 * std::cos(ang), vy = 5 * std::sin(ang); //velocity in x and y
 
-                    ang = ang / PI * 180; //transform into angular measure
-                    ang -= 90; //rotating angle
-                    if (ang < 0) ang += 360;
-                    bullet.emplace_back(imageBullet, bx, by, vx, vy, wRate, hRate, ang, false);
-                    ite->bulTime = duration; //update the last emitting time
+                        ang = ang / PI * 180; //transform into angular measure
+                        ang -= 90; //rotating angle
+                        if (ang < 0) ang += 360;
+                        bullet.emplace_back(imageBullet, bx, by, vx, vy, wRate, hRate, ang, false);
+                        ite->bulTime = duration; //update the last emitting time
+                    }
                     break;
+
                 }
                 case 1:{ //emit bullets as a semicircle
-                    int AMOUNT = 20; //the number of bullets, may change with hardness(ToDo)
+                    int AMOUNT = 25; //the number of bullets, may change with hardness(ToDo)
                     double radio = ite->colR; //initial radio of the semicircle
                     for (int k = 0; k <= AMOUNT; ++k){
                         double ang = (double)k / AMOUNT * PI; //emitting angle in radian measure
@@ -276,6 +302,20 @@ void dealWithBullet(){
     //if (keyboard['z']) std::cout << "Z" << std::endl;
 }
 
+void dealWithBonus(){
+
+    auto itn = bonus.begin();
+    while (itn != bonus.end()){
+        itn->pos.y += itn->speed;
+        itn->speed += itn->deltaSpeed;
+        if (itn->speed > itn->maxSpeed) itn->speed = itn->maxSpeed;
+        if (outOfScreen(*itn))
+            bonus.erase(itn); //out of screen
+        if (itn == bonus.end()) break;
+        else ++itn;
+    }
+}
+
 void dealWithCollision(){
     //bullets with planes
     auto itb = bullet.begin();
@@ -322,6 +362,36 @@ void dealWithCollision(){
             #endif // DEBUG_MODE
         }
         ++ite;
+    }
+
+    //player with bonus
+    auto itn = bonus.begin();
+    while (itn != bonus.end()){
+        if (isCollide(*itn, player)){
+            switch(itn->bType){
+                case 0: //add 500 scores
+                    score += 500;
+                    break;
+                case 1: //add 1000 scores
+                    score += 1000;
+                    break;
+                case 2: //add speedAttack
+                    if (ISA_Time < 1e-6) player.speedAttack /= 2;
+                    ISA_Time = duration;
+                    break;
+                case 3: //add a bomb
+                    ++soulAttack;
+                    break;
+                case 4: //add a HP
+                    ++player.HP;
+                    break;
+                default:
+                    break;
+            }
+            bonus.erase(itn);
+            continue;
+        }
+        else ++itn;
     }
 }
 

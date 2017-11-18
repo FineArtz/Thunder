@@ -22,6 +22,8 @@ void dealWithEnemy();
 
 void dealWithBullet();
 
+void dealWithBonus();
+
 void dealWithCollision();
 
 bool dealWithEnd();
