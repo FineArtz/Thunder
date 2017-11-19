@@ -17,7 +17,7 @@
 #include <ctime>
 #include <cstdlib>
 
-const std::string Game::TitleName = "Rednuht 0.1";
+const std::string Game::TitleName = "Rednuht 1.0";
 const int Game::SCREEN_WIDTH	= 1000;
 const int Game::PLAY_WIDTH      = 600;
 const int Game::SCREEN_HEIGHT	= 780;

@@ -353,13 +353,15 @@ void dealWithCollision(){
     //player with enemies
     auto ite = enemy.begin();
     while (ite != enemy.end()){
-        if (isCollide(*ite, player)){
-            ite->HP = 0;
-            #ifndef DEBUG_MODE
-            --player.HP;
-            if (soulAttack < 3) ++soulAttack;
-            player.isCol = true;
-            #endif // DEBUG_MODE
+        if (ite->HP > 0){
+            if (isCollide(*ite, player)){
+                ite->HP = 0;
+                #ifndef DEBUG_MODE
+                --player.HP;
+                if (soulAttack < 3) ++soulAttack;
+                player.isCol = true;
+                #endif // DEBUG_MODE
+            }
         }
         ++ite;
     }

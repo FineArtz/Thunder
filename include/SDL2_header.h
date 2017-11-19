@@ -22,7 +22,7 @@
 #include "res_path.h"
 #include "pointd.h"
 
-#define DEBUG_MODE
+//#define DEBUG_MODE
 
 namespace Game {
 

@@ -33,7 +33,15 @@ res/...
 > src/main2.cpp
 
 ## Modifications
-### 10-23
+### 10-22
+
+Construct the basis structure.
+
+* Add new Function: `drawImageC`.
+
+* Add new classes: `item` and its derived classes `Plane`, `Enemy` and `Bullet`.
+
+### 10-23(By Assitant Teacher Chen Jingxiao)
 
 You can use muti-file structures now.
 
@@ -50,3 +58,7 @@ A bug about memory-leak has been fixed.
 * fixed main.cpp & main2.cpp memory leak bug
 
 	( in drawHint(), a value of Image* did not call clearup() )
+
+### 10-21
+
+The first commitment, including initial files and two simple demos.

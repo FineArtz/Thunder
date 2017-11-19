@@ -52,7 +52,7 @@
 	"pointd.h"
 	"SDL2_header.h"
 
-1510823244 c:\users\administrator\desktop\development-thunder\thunder\include\sdl2_header.h
+1511069365 c:\users\administrator\desktop\development-thunder\thunder\include\sdl2_header.h
 	<SDL2/SDL.h>
 	<SDL2/SDL_ttf.h>
 	<SDL2/SDL_image.h>
@@ -431,15 +431,15 @@
 	"SDL2_header.h"
 	"item.h"
 
-1510830658 source:c:\users\administrator\desktop\development-thunder\thunder\deal.cpp
+1511070357 source:c:\users\administrator\desktop\development-thunder\thunder\deal.cpp
 	"deal.h"
 
-1510823187 source:c:\users\administrator\desktop\development-thunder\thunder\draw.cpp
+1511070185 source:c:\users\administrator\desktop\development-thunder\thunder\draw.cpp
 	"draw.h"
 
 1509175885 c:\users\administrator\desktop\development-thunder\thunder\deal.h
 
-1510823025 c:\users\administrator\desktop\development-thunder\thunder\include\draw.h
+1511069724 c:\users\administrator\desktop\development-thunder\thunder\include\draw.h
 	"SDL2_header.h"
 	"item.h"
 	"others.h"
@@ -447,6 +447,7 @@
 	<stdexcept>
 	<string>
 	<iostream>
+	<cmath>
 
 1510823444 c:\users\administrator\desktop\development-thunder\thunder\include\item.h
 	<cmath>

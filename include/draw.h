@@ -10,6 +10,7 @@
 #include <stdexcept>
 #include <string>
 #include <iostream>
+#include <cmath>
 
 //draw an image by its center position
 void drawImageC(Image *img, int x, int y,

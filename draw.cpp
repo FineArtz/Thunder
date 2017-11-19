@@ -14,6 +14,8 @@ extern int score, highestScore;
 extern double endTime;
 extern bool gameOver;
 
+const double PI = std::acos(-1);
+
 //draw image at its center point
 void drawImageC(Image *img, int x, int y,
                 const double &widthRate, const double &heightRate,
@@ -175,7 +177,7 @@ void drawEndInfo(){
     Image *text = textToImage(eInfo);
     int w, h;
     getImageSize(text, w, h);
-    drawImageC(text, PointD(PLAY_WIDTH / 2, PLAY_HEIGHT / 2 - 4 * h), 2.0, 2.0);
+    drawImageC(text, PointD(PLAY_WIDTH / 2, PLAY_HEIGHT / 2 - 6 * h), 2.0, 2.0);
     cleanup(text);
 
     eInfo = "Score: ";
@@ -188,13 +190,22 @@ void drawEndInfo(){
         text = textToImage(eInfo, fontSize, RED);
     }
     getImageSize(text, w, h);
-    drawImageC(text, PointD(PLAY_WIDTH / 2, PLAY_HEIGHT / 2), 2.0, 2.0);
+    drawImageC(text, PointD(PLAY_WIDTH / 2, PLAY_HEIGHT / 2 - 2 * h), 2.0, 2.0);
     cleanup(text);
 
     eInfo = "Highest Score: ";
     eInfo += toString(highestScore);
     text = textToImage(eInfo);
     getImageSize(text, w, h);
-    drawImageC(text, PointD(PLAY_WIDTH / 2, PLAY_HEIGHT / 2 + 4 * h), 2.0, 2.0);
+    drawImageC(text, PointD(PLAY_WIDTH / 2, PLAY_HEIGHT / 2 + 2 * h), 2.0, 2.0);
+    cleanup(text);
+
+    eInfo = "- Press ESC to Quit -";
+    int RR = 255 * std::fabs(std::cos(duration)),
+        GG = 255 * std::fabs(std::cos(duration + 2 * PI / 3)),
+        BB = 255 * std::fabs(std::cos(duration - 2 * PI / 3));
+    Color RAINBOW = {RR, GG, BB, 255};
+    text = textToImage(eInfo, fontSize, RAINBOW);
+    drawImageC(text, PointD(PLAY_WIDTH / 2, PLAY_HEIGHT / 2 + 6 * h), 2.0, 2.0);
     cleanup(text);
 }
