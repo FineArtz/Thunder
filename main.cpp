@@ -76,7 +76,7 @@ void initialize(){
     setPlayer();
     soulAttack = 3;
 
-    std::ifstream ifs("bin\\Debug\\hsset.dll");
+    std::ifstream ifs("hsset.dll");
     ifs >> highestScore;
     ifs.close();
 
@@ -130,7 +130,7 @@ int work(bool &quit){
         bool isEnd = dealWithEnd();
         if (isEnd){
             if (score + (int)player.eraseTime > highestScore){
-                std::ofstream ofs("bin\\Debug\\hsset.dll");
+                std::ofstream ofs("hsset.dll");
                 ofs << score + (int)player.eraseTime << std::endl;
                 ofs.close();
             }

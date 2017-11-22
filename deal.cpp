@@ -400,6 +400,7 @@ void dealWithCollision(){
 bool dealWithEnd(){
     enemy.clear();
     bullet.clear();
+    bonus.clear();
     gameOver = true;
     if (!drawBurstAnime(2, player)){ //show score
         static int ctrl = 0; //control delay time
